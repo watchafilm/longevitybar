@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
         hostname: 'drive.usercontent.google.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pic.onlinewebfonts.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
