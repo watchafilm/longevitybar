@@ -144,11 +144,13 @@ export default function OrderPanel() {
         <Card className="flex flex-col flex-grow">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
-            <CardDescription>Review items before confirming</CardDescription>
+            <CardDescription>
+                {showQr ? `Scan to pay ${totalAmount.toFixed(2)} THB` : "Review items before confirming"}
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <Separator />
-            <div className="relative flex-grow h-[320px] lg:h-auto lg:min-h-[200px]">
+            <div className="relative flex-grow h-[320px] lg:h-auto lg:min-h-[200px] overflow-hidden">
               <AnimatePresence mode="wait">
                 {showQr && qrCodeUrl ? (
                   <motion.div
@@ -159,9 +161,6 @@ export default function OrderPanel() {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
                   >
-                    <p className="mb-4 text-muted-foreground">
-                      Scan to pay {totalAmount.toFixed(2)} THB
-                    </p>
                     <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
                   </motion.div>
                 ) : (
