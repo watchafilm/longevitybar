@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { getSdks, initializeFirebase } from '@/firebase';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import type { OrderPayload } from '@/lib/types';
@@ -15,9 +15,7 @@ export async function createOrder(orderData: OrderPayload) {
     addDocumentNonBlocking(collection(firestore, 'orders'), {
       ...orderData,
       status: 'pending',
-      // Firestore serverTimestamp needs to be handled in the non-blocking function or client-side if possible.
-      // For server actions, we'll create it here.
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
     });
 
     revalidatePath('/kitchen');

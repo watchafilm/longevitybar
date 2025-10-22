@@ -9,6 +9,7 @@ export type Drink = {
 };
 
 export type OrderItem = {
+    drinkId: string;
     name: Drink['name'];
     quantity: number;
     price: number;

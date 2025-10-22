@@ -25,8 +25,8 @@ const QR_CODE_URLS = {
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
   { id: 'cash', label: 'Cash', icon: Wallet },
-  { id: 'credit_card_qr', label: 'Credit Card QR', icon: CreditCard },
   { id: 'qr', label: 'QR Scan', icon: QrCode },
+  { id: 'credit_card_qr', label: 'Credit Card QR', icon: CreditCard },
 ];
 
 export default function OrderPanel() {
@@ -60,7 +60,7 @@ export default function OrderPanel() {
           item.name === drink.name ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prevItems, { name: drink.name, price: drink.price, quantity: 1 }];
+      return [...prevItems, { name: drink.name, price: drink.price, quantity: 1, drinkId: drink.id }];
     });
   };
 
@@ -161,7 +161,7 @@ export default function OrderPanel() {
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <Separator />
-            <div className="relative flex-grow min-h-[260px] overflow-hidden">
+            <div className="relative flex-grow min-h-[260px] overflow-auto">
               <AnimatePresence mode="wait">
                 {showQr && qrCodeUrl ? (
                   <motion.div
