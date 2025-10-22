@@ -151,7 +151,7 @@ export default function OrderPanel() {
                         src={drink.imageUrl}
                         alt={drink.name}
                         fill
-                        className="object-contain transform group-hover:scale-110 transition-transform duration-300 p-4"
+                        className="object-cover object-top transform group-hover:scale-110 transition-transform duration-300 p-4"
                     />
                 </div>
                 <div className="flex flex-col p-4 flex-grow justify-center">
