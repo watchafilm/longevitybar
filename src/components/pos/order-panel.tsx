@@ -234,7 +234,7 @@ export default function OrderPanel() {
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {showQr ? 'Confirming...' : 'Submitting...'}
                 </>
               ) : (
-                showQr ? 'I have paid' : 'Confirm Payment'
+                'Confirm Payment'
               )}
             </Button>
           </CardFooter>
