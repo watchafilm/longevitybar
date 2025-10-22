@@ -1,44 +1,47 @@
 /**
- * @fileoverview Firestore Security Rules for the SipSwift drink ordering application.
+ * @fileoverview Firestore Security Rules for SipSwift.
  *
  * Core Philosophy:
- * The ruleset provides open read access to drinks menu and open read/write access to orders,
- * allowing for real-time order management and data integrity. Write access to drinks is disallowed.
+ * This ruleset enforces public read access to drink menu data and open access to order data.
+ * There are no user-based restrictions.
  *
  * Data Structure:
  * - /drinks/{drinkId}: Stores drink menu items.
  * - /orders/{orderId}: Stores customer orders.
  *
  * Key Security Decisions:
- * - Public read access to drink menu for ease of use.
- * - Open read/write access to orders for any user.
+ * - Drink menu data is publicly readable.
+ * - All users can create, read, update, and delete order data.
+ * - No user-based ownership or roles are enforced.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to drinks and prevents write access.
+     * @description Grants public read access to drink menu items.  Anyone can create, read, update, and delete drinks.
      * @path /drinks/{drinkId}
-     * @allow (get, list) Any user can read the drink menu.
-     * @deny (create, update, delete) No user can write to the drink menu.
-     * @principle Allows public read access to static drink menu data.
+     * @allow (get, list) Any user can read drink menu data.
+     * @allow (create, update, delete) Any user can modify drink menu data.
+     * @deny None.
+     * @principle Allows public access to static drink data.
      */
     match /drinks/{drinkId} {
       allow get, list: if true;
-      allow create, update, delete: if false;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Grants any user read/write access to orders.
+     * @description Grants open access to order data. Anyone can create, read, update, and delete orders.
      * @path /orders/{orderId}
-     * @allow (create, update, delete) Any authenticated user can create, update, or delete an order.
-     * @allow (get, list) Any authenticated user can read an order.
+     * @allow (get, list) Any user can read order data.
+     * @allow (create, update, delete) Any user can modify order data.
      * @deny None.
-     * @principle Allows for real-time order management without ownership restrictions.
+     * @principle Allows free access to order information.
      */
     match /orders/{orderId} {
-      allow get, list, create, update, delete: if true;
+      allow get, list: if true;
+      allow create, update, delete: if true;
     }
   }
 }
