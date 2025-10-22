@@ -2,21 +2,23 @@
 
 import { useMemo } from 'react';
 import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
-import { useFirestore, useMemoFirebase, useCollection } from '@/firebase';
+import { useFirestore, useMemoFirebase, useCollection, useUser } from '@/firebase';
 import type { Order, OrderStatus } from '@/lib/types';
 
 
 export function useOrders(status: OrderStatus) {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
 
   const ordersQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
+    // Wait for user and firestore to be available
+    if (!firestore || !user) return null;
     return query(
       collection(firestore, 'orders'),
       where('status', '==', status),
       orderBy('createdAt', 'asc')
     );
-  }, [firestore, status]);
+  }, [firestore, user, status]);
 
   const { data: ordersData, isLoading: loading } = useCollection<Order>(ordersQuery);
 
@@ -29,19 +31,21 @@ export function useOrders(status: OrderStatus) {
   }, [ordersData]);
 
 
-  return { orders, loading };
+  return { orders, loading: isUserLoading || loading };
 }
 
 export function useAllOrders() {
     const firestore = useFirestore();
+    const { user, isUserLoading } = useUser();
   
     const allOrdersQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
+        // Wait for user and firestore to be available
+        if (!firestore || !user) return null;
         return query(
             collection(firestore, 'orders'),
             orderBy('createdAt', 'desc')
         );
-    }, [firestore]);
+    }, [firestore, user]);
 
     const { data: ordersData, isLoading: loading } = useCollection<Order>(allOrdersQuery);
     
@@ -53,5 +57,5 @@ export function useAllOrders() {
       }));
     }, [ordersData]);
   
-    return { orders, loading };
+    return { orders, loading: isUserLoading || loading };
   }
