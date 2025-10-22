@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents a drink order placed by a customer.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the order."
+        },
+        "orderTime": {
+          "type": "string",
+          "description": "The date and time when the order was placed.",
+          "format": "date-time"
+        },
+        "drinkId": {
+          "type": "string",
+          "description": "Reference to Drink. (Relationship: Drink 1:N Order)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "The quantity of the drink ordered."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "The payment method used for the order (cash, QR scan, credit card QR)."
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "The total amount for the order."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the order (e.g., pending, served)."
+        }
+      },
+      "required": [
+        "id",
+        "orderTime",
+        "drinkId",
+        "quantity",
+        "paymentMethod",
+        "totalAmount",
+        "status"
+      ]
+    },
+    "Drink": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Drink",
+      "type": "object",
+      "description": "Represents a drink item available on the menu.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the drink."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the drink (e.g., Green, Red, Yellow)."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the drink."
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the drink."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "price"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/drinks/{drinkId}",
+        "definition": {
+          "entityName": "Drink",
+          "schema": {
+            "$ref": "#/backend/entities/Drink"
+          },
+          "description": "Stores details about each drink item available on the menu.",
+          "params": [
+            {
+              "name": "drinkId",
+              "description": "Unique identifier for the drink."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/orders/{orderId}",
+        "definition": {
+          "entityName": "Order",
+          "schema": {
+            "$ref": "#/backend/entities/Order"
+          },
+          "description": "Stores information about each order placed. Includes denormalized 'drinkId' for authorization independence.",
+          "params": [
+            {
+              "name": "orderId",
+              "description": "Unique identifier for the order."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support the SipSwift app's order-taking and management features. It prioritizes authorization independence and efficient data retrieval. Drinks are stored in a top-level `/drinks` collection. Orders are stored in the `/orders` collection, which is accessible to bar staff. To achieve authorization independence, the `orders` collection includes denormalized data like drink information. This eliminates the need for `get()` calls in security rules when creating and managing orders. The structure facilitates QAPs (Rules are not Filters) because the rules can be written to allow listing only specific orders based on the denormalized data, without filtering after the query."
+  }
+}

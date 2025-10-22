@@ -1,30 +1,31 @@
 /**
- * @fileoverview Firestore Security Rules for the SipSwift application.
+ * @fileoverview Firestore Security Rules for SipSwift.
  *
  * Core Philosophy:
- * This ruleset provides public read access to drink menu data and allows unauthenticated users to create order data. Updates and deletes of order data are disallowed.
+ * This ruleset prioritizes secure access to drink and order data while allowing for a simplified data model during prototyping. It uses a combination of public read access for drinks and authenticated access for orders.
  *
  * Data Structure:
- * - /drinks/{drinkId}: Stores drink menu items.
- * - /orders/{orderId}: Stores customer orders.
+ * - /drinks/{drinkId}: Stores publicly accessible information about available drinks.
+ * - /orders/{orderId}: Stores order information.
  *
  * Key Security Decisions:
- * - Drink menu data is publicly readable.
- * - Order creation is open to allow unauthenticated orders, but updates and deletes are denied.
- * - No user-based ownership is enforced for orders, meaning all staff can view all orders.
- * - No write operation is authorized, so there's no denormalization needed.
+ * - Drinks are publicly readable but writes are not allowed. This assumes that drinks are managed through a separate, secured administrative interface.
+ * - Orders are writeable by authenticated users only.
+ * - The rules do NOT validate the specific data types or the presence of optional fields within the documents.
+ *
+ * Denormalization for Authorization:
+ * The `orders` collection includes denormalized `drinkId` data. This avoids the need for `get()` calls in the security rules when creating and managing orders.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to drink menu items and restricts write access.
+     * @description Grants public read access to all drinks. Write operations are denied.
      * @path /drinks/{drinkId}
-     * @allow get, list: Any user can read drink information.
-     * @allow create, update, delete: No one can create, update or delete drink information.
-     * @deny create, update, delete: if true; // No one is allowed to write to the drinks collection.
-     * @principle Provides public read access to menu data while preventing unauthorized modifications.
+     * @allow (get, list) Public access to read drink information.
+     * @deny (create, update, delete) No one can create, update, or delete drinks via the client.
+     * @principle Allows public read access for drink information.
      */
     match /drinks/{drinkId} {
       allow get, list: if true;
@@ -32,18 +33,28 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows anyone to create orders, but prevents updates and deletes.
+     * @description Allows authenticated users to create orders.
      * @path /orders/{orderId}
-     * @allow create: Any user can create orders.
-     * @allow get, list: Any user can read order information.
-     * @allow update, delete: No one can update or delete orders.
-     * @deny update, delete: if true; // No one is allowed to update or delete orders.
-     * @principle Allows order creation while preventing modification or deletion of existing orders.
+     * @allow (create) Authenticated user can create a new order.
+     * @allow (get, list) Authenticated user can read existing order.
+     * @allow (update, delete) Authenticated user can update or delete an existing order.
+     * @deny (create) Unauthenticated user cannot create an order.
+     * @deny (update, delete) Update/Delete operations are allowed for authenticated users, but the rule requires document existence check.
+     * @principle Authenticated users can manage orders.
      */
     match /orders/{orderId} {
-      allow get, list: if true;
-      allow create: if true;
-      allow update, delete: if false;
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource.data != null;
+      allow delete: if isSignedIn() && resource.data != null;
+    }
+
+    /**
+     * @description Checks if the user is signed in.
+     * @return {bool} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
     }
   }
 }
