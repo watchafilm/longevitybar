@@ -147,7 +147,7 @@ export default function OrderPanel() {
         {DRINKS.map((drink) => (
             <Card key={drink.name} className={cn("overflow-hidden group flex flex-col flex-grow", getBgColorClass(drink.id))}>
                  <div className="flex flex-col flex-grow">
-                    <div className="relative w-full aspect-square">
+                    <div className="relative w-full flex-grow flex items-center justify-center p-4">
                         <Image
                             src={drink.imageUrl}
                             alt={drink.name}
@@ -155,9 +155,9 @@ export default function OrderPanel() {
                             className="object-contain transform group-hover:scale-110 transition-transform duration-300"
                         />
                     </div>
-                     <div className="flex flex-col flex-grow p-4">
+                     <div className="flex flex-col p-4 pt-0">
                         <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                        <p className="text-muted-foreground font-medium mb-4 flex-grow">{drink.price} THB</p>
+                        <p className="text-muted-foreground font-medium mb-4">{drink.price} THB</p>
                         <div className="mt-auto">
                             <Button onClick={() => handleAddItem(drink)} className="w-full">
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add
