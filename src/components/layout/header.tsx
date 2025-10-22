@@ -3,20 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Button } from '../ui/button';
 
 export function AppHeader() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    router.push('/login');
-    router.refresh();
-  };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
+      <div className="container flex h-14 items-center">
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <Image src="https://drive.google.com/uc?export=view&id=1XCn1KoGz8N98K-W073bsMgX80lfHy3H8" alt="Longevity Bar Logo" width={40} height={40} className="h-10 w-10" />
@@ -25,7 +18,6 @@ export function AppHeader() {
             </h1>
           </Link>
         </div>
-        <Button variant="outline" onClick={handleLogout}>Logout</Button>
       </div>
     </header>
   );
