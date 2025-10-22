@@ -20,7 +20,7 @@ export function AppHeader() {
       <div className="container flex h-14 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Package2 className="h-6 w-6 text-primary" />
-          <span className="font-headline font-bold text-lg">SipSwift</span>
+          <span className="font-headline font-bold text-lg">Longevity Bar</span>
         </Link>
         <nav className="flex items-center space-x-4 lg:space-x-6">
           {navItems.map((item) => (

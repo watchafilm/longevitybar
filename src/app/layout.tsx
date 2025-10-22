@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AppHeader } from '@/components/layout/header';
 
 export const metadata: Metadata = {
-  title: 'SipSwift',
+  title: 'Longevity Bar',
   description: 'A modern beverage ordering system.',
 };
 
