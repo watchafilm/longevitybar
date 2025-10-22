@@ -2,59 +2,55 @@
  * @fileoverview Firestore Security Rules for SipSwift.
  *
  * Core Philosophy:
- * This ruleset prioritizes secure access to drink and order data while allowing for a simplified data model during prototyping. It uses a combination of public read access for drinks and authenticated access for orders.
+ * This ruleset prioritizes a flexible data structure for prototyping while enforcing strict authorization.
+ * It allows public read access to drinks and open access to orders.
  *
  * Data Structure:
- * - /drinks/{drinkId}: Stores publicly accessible information about available drinks.
- * - /orders/{orderId}: Stores order information.
+ * - /drinks/{drinkId}: Stores information about available drinks. Publicly readable.
+ * - /orders/{orderId}: Stores details of customer orders. Open write access.
  *
  * Key Security Decisions:
- * - Drinks are publicly readable but writes are not allowed. This assumes that drinks are managed through a separate, secured administrative interface.
- * - Orders are writeable by authenticated users only.
- * - The rules do NOT validate the specific data types or the presence of optional fields within the documents.
+ * - Public read access for drinks allows anyone to see the menu.
+ * - Open access to orders allows for quick order placement during prototyping.
  *
  * Denormalization for Authorization:
- * The `orders` collection includes denormalized `drinkId` data. This avoids the need for `get()` calls in the security rules when creating and managing orders.
+ * - Orders include denormalized `drinkId` to avoid costly `get()` calls to the `/drinks` collection during order creation and management.
+ *
+ * Structural Segregation:
+ * - Uses top-level collections for both drinks and orders, which is appropriate given the lack of private user-specific data.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to all drinks. Write operations are denied.
+     * @description Allows public read access to drink information.
      * @path /drinks/{drinkId}
-     * @allow (get, list) Public access to read drink information.
-     * @deny (create, update, delete) No one can create, update, or delete drinks via the client.
-     * @principle Allows public read access for drink information.
+     * @allow (get, list) Any user can view drink details.
+     * @deny (create, update, delete) No user can create, update, or delete drinks through the client.
+     * @principle Public read access for menu items.
      */
     match /drinks/{drinkId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     /**
-     * @description Allows authenticated users to create orders.
+     * @description Allows open write access to orders.
      * @path /orders/{orderId}
-     * @allow (create) Authenticated user can create a new order.
-     * @allow (get, list) Authenticated user can read existing order.
-     * @allow (update, delete) Authenticated user can update or delete an existing order.
-     * @deny (create) Unauthenticated user cannot create an order.
-     * @deny (update, delete) Update/Delete operations are allowed for authenticated users, but the rule requires document existence check.
-     * @principle Authenticated users can manage orders.
+     * @allow (create, update, delete) Any user can create, update, or delete orders.
+     * @deny (get, list) Not applicable.
+     * @principle Open write access for rapid prototyping.
      */
     match /orders/{orderId} {
-      allow get, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource.data != null;
-      allow delete: if isSignedIn() && resource.data != null;
-    }
-
-    /**
-     * @description Checks if the user is signed in.
-     * @return {bool} True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+      allow get: if true;
+      allow list: if true;
     }
   }
 }

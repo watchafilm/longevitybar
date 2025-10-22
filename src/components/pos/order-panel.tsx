@@ -92,7 +92,6 @@ export default function OrderPanel() {
     }
 
     startTransition(async () => {
-      // Since we removed firebase, we'll just simulate a success response.
       const result = await createOrder({
         items: orderItems,
         totalAmount,
@@ -102,7 +101,7 @@ export default function OrderPanel() {
       if (result.success) {
         toast({
           title: "Order Submitted",
-          description: "The order has been submitted.",
+          description: "The order has been submitted to the kitchen.",
           action: <CheckCircle className="text-green-500" />,
         });
         setOrderItems([]);

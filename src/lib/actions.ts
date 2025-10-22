@@ -1,26 +1,37 @@
 'use server';
 
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { initializeFirebase } from '@/firebase';
 import type { OrderPayload } from '@/lib/types';
+import { revalidatePath } from 'next/cache';
 
-// This is a mock function since we removed Firebase.
-// In a real application, this would interact with a database.
 export async function createOrder(orderData: OrderPayload) {
   try {
-    console.log('Order created:', orderData);
-    // Simulate a successful API call
-    await new Promise(resolve => setTimeout(resolve, 500)); 
+    const { firestore } = initializeFirebase();
+    const ordersCollection = collection(firestore, 'orders');
+    
+    await addDoc(ordersCollection, {
+      ...orderData,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    });
+
+    // Revalidate paths to show new data
+    revalidatePath('/');
+    
     return { success: true, message: 'Order created successfully.' };
+
   } catch (error) {
     console.error('Error in createOrder action:', error);
-    return { success: false, message: (error as Error).message || 'Failed to create order.' };
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create order.';
+    return { success: false, message: errorMessage };
   }
 }
 
-// This is a mock function since we removed Firebase.
 export async function updateOrderStatus(orderId: string, status: 'pending' | 'served') {
+  // This function is not used in this step but is kept for future use.
   try {
     console.log(`Order ${orderId} status updated to ${status}`);
-    // Simulate a successful API call
     await new Promise(resolve => setTimeout(resolve, 500));
     return { success: true, message: 'Order status updated.' };
   } catch (error) {
