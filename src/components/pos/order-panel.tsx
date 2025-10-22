@@ -137,7 +137,7 @@ export default function OrderPanel() {
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
             <Card key={drink.name} className={cn("overflow-hidden group flex flex-row", drink.bgColorLight)}>
-                <div className="relative w-48 h-full">
+                <div className="relative w-32 h-32">
                     <Image
                         src={drink.imageUrl}
                         alt={drink.name}
