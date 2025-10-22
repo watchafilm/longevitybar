@@ -6,31 +6,52 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { updateOrderStatus } from '@/lib/actions';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useFirebase } from '@/firebase/provider';
+import { doc, updateDoc } from 'firebase/firestore';
 
 export default function KitchenDisplay() {
   const { orders, isLoading, error } = useOrders();
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [servingItemId, setServingItemId] = useState<string | null>(null);
+  const { firestore } = useFirebase();
 
-  const handleServe = (orderId: string, itemIndex: number, newStatus: 'served') => {
-    const uniqueItemId = `${orderId}-${itemIndex}`;
+  const handleServe = (order: ExpandedOrder, itemIndex: number, newStatus: 'served') => {
+    if (!firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Firestore is not available.',
+      });
+      return;
+    }
+
+    const uniqueItemId = `${order.id}-${itemIndex}`;
     setServingItemId(uniqueItemId);
 
     startTransition(async () => {
       try {
-        const result = await updateOrderStatus(orderId, itemIndex, newStatus);
-        if (result?.success) {
-          toast({
+        const orderRef = doc(firestore, 'orders', order.id);
+
+        const currentItemStatuses = order.itemStatuses && Array.isArray(order.itemStatuses)
+            ? [...order.itemStatuses]
+            : Array(order.items.length).fill('pending');
+        
+        if (itemIndex < 0 || itemIndex >= currentItemStatuses.length) {
+            throw new Error("Invalid item index");
+        }
+
+        currentItemStatuses[itemIndex] = newStatus;
+
+        await updateDoc(orderRef, { itemStatuses: currentItemStatuses });
+
+        toast({
             title: 'Status Updated',
             description: `Order item has been marked as served.`,
-          });
-        } else {
-          throw new Error(result?.message || 'Failed to update status.');
-        }
+        });
+
       } catch (e: any) {
         toast({
           variant: 'destructive',
@@ -59,7 +80,7 @@ export default function KitchenDisplay() {
         <TableCell>
           <Button
             size="sm"
-            onClick={() => handleServe(item.id, itemIndex, 'served')}
+            onClick={() => handleServe(item, itemIndex, 'served')}
             disabled={isPending || itemStatus === 'served' || isServing}
           >
             {isServing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
