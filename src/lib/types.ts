@@ -8,6 +8,7 @@ export type Drink = {
     color: string;
     bgColor: string;
     bgColorLight: string;
+    imageUrl: string;
 };
 
 export type OrderItem = {

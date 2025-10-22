@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useTransition, useMemo } from 'react';
@@ -133,17 +134,22 @@ export default function OrderPanel() {
   return (
     <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className={cn("overflow-hidden group flex-1 flex flex-col h-full", drink.bgColorLight)}>
-                 <div className="flex items-center h-full">
-                    <div className={cn("w-24 h-full flex-shrink-0", drink.bgColor)}></div>
-                    <div className="flex-grow p-4">
-                        <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                        <p className="text-muted-foreground font-medium">{drink.price} THB</p>
-                    </div>
-                    <div className="p-4">
-                        <Button onClick={() => handleAddItem(drink)}>
+            <Card key={drink.name} className={cn("overflow-hidden group flex flex-col", drink.bgColorLight)}>
+                <div className="relative w-full h-48">
+                    <Image
+                        src={drink.imageUrl}
+                        alt={drink.name}
+                        layout="fill"
+                        objectFit="cover"
+                    />
+                </div>
+                 <div className="flex flex-col flex-grow p-4">
+                    <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
+                    <p className="text-muted-foreground font-medium mb-4">{drink.price} THB</p>
+                    <div className="mt-auto">
+                        <Button onClick={() => handleAddItem(drink)} className="w-full">
                             <PlusCircle className="mr-2 h-4 w-4" /> Add
                         </Button>
                     </div>
