@@ -10,14 +10,13 @@ export interface ExpandedOrder extends Order {
   itemStatuses?: ('pending' | 'served')[];
 }
 
-const convertOrder = (doc: any): ExpandedOrder => {
-  const data = doc.data() as any;
+const convertOrder = (orderData: any): ExpandedOrder => {
   return {
-    id: doc.id,
-    ...data,
-    createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toMillis() : data.createdAt,
-    items: data.items as OrderItem[],
-    itemStatuses: data.itemStatuses || data.items.map(() => 'pending'),
+    ...orderData,
+    id: orderData.id,
+    createdAt: orderData.createdAt instanceof Timestamp ? orderData.createdAt.toMillis() : orderData.createdAt,
+    items: orderData.items as OrderItem[],
+    itemStatuses: orderData.itemStatuses || orderData.items.map(() => 'pending'),
   };
 };
 
