@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useTransition, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Wallet, QrCode, CreditCard, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +19,11 @@ const DRINKS: Drink[] = [
   { id: 'drink_3', name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow' },
 ];
 
+const QR_CODE_URLS = {
+    qr: 'https://drive.google.com/uc?export=view&id=1kt1wQUj32SqfyPEgClwo5m3s6wikFLIH',
+    credit_card_qr: 'https://drive.usercontent.google.com/download?id=1MDtAIcAu8z1PHv9gaGVGEnHsbR6rAfuy',
+}
+
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
   { id: 'cash', label: 'Cash', icon: Wallet },
   { id: 'qr', label: 'QR Scan', icon: QrCode },
@@ -28,10 +35,20 @@ export default function OrderPanel() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   const totalAmount = useMemo(() => {
     return orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   }, [orderItems]);
+
+  const handleSetPaymentMethod = (method: PaymentMethod) => {
+    setPaymentMethod(method);
+    if (method === 'qr' || method === 'credit_card_qr') {
+      setQrCodeUrl(QR_CODE_URLS[method]);
+      setIsQrModalOpen(true);
+    }
+  };
 
   const handleAddItem = (drink: Drink) => {
     setOrderItems((prevItems) => {
@@ -86,6 +103,7 @@ export default function OrderPanel() {
           action: <CheckCircle className="text-green-500" />,
         });
         setOrderItems([]);
+        setIsQrModalOpen(false);
       } else {
         toast({
           title: "Submission Failed",
@@ -98,6 +116,7 @@ export default function OrderPanel() {
   };
 
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
@@ -162,7 +181,7 @@ export default function OrderPanel() {
                     <Button
                         key={id}
                         variant={paymentMethod === id ? 'default' : 'outline'}
-                        onClick={() => setPaymentMethod(id)}
+                        onClick={() => handleSetPaymentMethod(id)}
                         className="flex flex-col h-16"
                     >
                         <Icon className="h-6 w-6 mb-1" />
@@ -189,5 +208,30 @@ export default function OrderPanel() {
         </Card>
       </div>
     </div>
+    <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
+        <DialogContent className="max-w-md">
+            <DialogHeader>
+            <DialogTitle className="font-headline text-2xl">Scan to Pay</DialogTitle>
+            <DialogDescription>
+                Use your banking app to scan the QR code and pay {totalAmount.toFixed(2)} THB.
+            </DialogDescription>
+            </DialogHeader>
+            {qrCodeUrl && (
+                <div className="flex justify-center p-4">
+                    <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
+                </div>
+            )}
+             <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Confirming...
+                </>
+              ) : (
+                'I have paid'
+              )}
+            </Button>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }
