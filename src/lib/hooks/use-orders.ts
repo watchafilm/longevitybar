@@ -10,7 +10,6 @@ export function useOrders(status: OrderStatus) {
   const firestore = useFirestore();
 
   const ordersQuery = useMemoFirebase(() => {
-    // Wait for firestore to be available
     if (!firestore) return null;
     return query(
       collection(firestore, 'orders'),
@@ -25,7 +24,8 @@ export function useOrders(status: OrderStatus) {
     if (!ordersData) return [];
     return ordersData.map(order => ({
       ...order,
-      createdAt: (order.createdAt as Timestamp)?.toDate() || new Date()
+      // Safely convert Firestore Timestamp to JS Date
+      createdAt: order.createdAt instanceof Timestamp ? order.createdAt.toDate() : new Date()
     }));
   }, [ordersData]);
 
@@ -37,7 +37,6 @@ export function useAllOrders() {
     const firestore = useFirestore();
   
     const allOrdersQuery = useMemoFirebase(() => {
-        // Wait for firestore to be available
         if (!firestore) return null;
         return query(
             collection(firestore, 'orders'),
@@ -51,7 +50,8 @@ export function useAllOrders() {
       if (!ordersData) return [];
       return ordersData.map(order => ({
         ...order,
-        createdAt: (order.createdAt as Timestamp)?.toDate() || new Date()
+        // Safely convert Firestore Timestamp to JS Date
+        createdAt: order.createdAt instanceof Timestamp ? order.createdAt.toDate() : new Date()
       }));
     }, [ordersData]);
   
