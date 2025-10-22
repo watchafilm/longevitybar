@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { collection, query, where, onSnapshot, orderBy, Query, CollectionReference, DocumentData, Timestamp } from 'firebase/firestore';
-import { useFirestore, useMemoFirebase } from '@/firebase';
+import { useMemo } from 'react';
+import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { useFirestore, useMemoFirebase, useCollection } from '@/firebase';
 import type { Order, OrderStatus } from '@/lib/types';
 
 
 export function useOrders(status: OrderStatus) {
   const firestore = useFirestore();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const ordersQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -20,40 +18,22 @@ export function useOrders(status: OrderStatus) {
     );
   }, [firestore, status]);
 
-  useEffect(() => {
-    if (!ordersQuery) {
-        setLoading(false);
-        return;
-    }
-    setLoading(true);
-    const unsubscribe = onSnapshot(ordersQuery, (querySnapshot) => {
-      const ordersData: Order[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        ordersData.push({ 
-          id: doc.id, 
-          ...data,
-          // Convert Firestore Timestamp to JS Date object
-          createdAt: (data.createdAt as Timestamp)?.toDate() || new Date()
-        } as Order);
-      });
-      setOrders(ordersData);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching orders: ", error);
-      setLoading(false);
-    });
+  const { data: ordersData, isLoading: loading } = useCollection<Order>(ordersQuery);
 
-    return () => unsubscribe();
-  }, [ordersQuery]);
+  const orders = useMemo(() => {
+    if (!ordersData) return [];
+    return ordersData.map(order => ({
+      ...order,
+      createdAt: (order.createdAt as Timestamp)?.toDate() || new Date()
+    }));
+  }, [ordersData]);
+
 
   return { orders, loading };
 }
 
 export function useAllOrders() {
     const firestore = useFirestore();
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
   
     const allOrdersQuery = useMemoFirebase(() => {
         if (!firestore) return null;
@@ -63,30 +43,15 @@ export function useAllOrders() {
         );
     }, [firestore]);
 
-    useEffect(() => {
-        if(!allOrdersQuery) {
-            setLoading(false);
-            return;
-        }
-      const unsubscribe = onSnapshot(allOrdersQuery, (querySnapshot) => {
-        const ordersData: Order[] = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          ordersData.push({ 
-            id: doc.id, 
-            ...data,
-            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date()
-          } as Order);
-        });
-        setOrders(ordersData);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching all orders: ", error);
-        setLoading(false);
-      });
-  
-      return () => unsubscribe();
-    }, [allOrdersQuery]);
+    const { data: ordersData, isLoading: loading } = useCollection<Order>(allOrdersQuery);
+    
+    const orders = useMemo(() => {
+      if (!ordersData) return [];
+      return ordersData.map(order => ({
+        ...order,
+        createdAt: (order.createdAt as Timestamp)?.toDate() || new Date()
+      }));
+    }, [ordersData]);
   
     return { orders, loading };
   }
