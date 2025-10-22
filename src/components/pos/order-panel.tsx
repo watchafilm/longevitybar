@@ -153,7 +153,7 @@ export default function OrderPanel() {
                             alt={drink.name}
                             width={192}
                             height={192}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-300"
                         />
                     </div>
                      <div className="flex flex-col flex-grow p-4">
