@@ -8,9 +8,12 @@ import { Separator } from '@/components/ui/separator';
 import { Wallet, QrCode, CreditCard, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { createOrder } from '@/lib/actions';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useFirebase } from '@/firebase/provider';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, serverTimestamp } from 'firebase/firestore';
+
 
 const DRINKS: Drink[] = [
   { id: 'drink_1', name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
@@ -36,6 +39,7 @@ export default function OrderPanel() {
   const { toast } = useToast();
   const [showQr, setShowQr] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const { firestore } = useFirebase();
 
   const totalAmount = useMemo(() => {
     return orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -90,15 +94,27 @@ export default function OrderPanel() {
       });
       return;
     }
-
-    startTransition(async () => {
-      const result = await createOrder({
-        items: orderItems,
-        totalAmount,
-        paymentMethod,
+    if (!firestore) {
+      toast({
+        title: "Submission Failed",
+        description: "Firestore is not available. Please try again later.",
+        variant: "destructive",
       });
+      return;
+    }
 
-      if (result.success) {
+
+    startTransition(() => {
+      try {
+        const ordersCollection = collection(firestore, 'orders');
+        addDocumentNonBlocking(ordersCollection, {
+          items: orderItems,
+          totalAmount,
+          paymentMethod,
+          status: 'pending',
+          createdAt: serverTimestamp(),
+        });
+  
         toast({
           title: "Order Submitted",
           description: "The order has been submitted to the kitchen.",
@@ -107,10 +123,11 @@ export default function OrderPanel() {
         setOrderItems([]);
         setShowQr(false);
         setPaymentMethod('cash');
-      } else {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create order.';
         toast({
           title: "Submission Failed",
-          description: result.message,
+          description: errorMessage,
           variant: "destructive",
           action: <XCircle className="text-white"/>,
         });
