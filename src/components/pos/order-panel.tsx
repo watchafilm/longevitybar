@@ -131,12 +131,21 @@ export default function OrderPanel() {
     });
   };
 
+  const getBgColorClass = (drinkId: string) => {
+    switch (drinkId) {
+      case 'drink_1': return 'bg-drink-green/10';
+      case 'drink_2': return 'bg-drink-red/10';
+      case 'drink_3': return 'bg-drink-yellow/10';
+      default: return '';
+    }
+  }
+
   return (
     <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className={cn("overflow-hidden group flex flex-row", drink.bgColorLight)}>
+            <Card key={drink.name} className={cn("overflow-hidden group flex flex-row", getBgColorClass(drink.id))}>
                 <div className="relative w-32 h-32">
                     <Image
                         src={drink.imageUrl}

@@ -7,7 +7,6 @@ export type Drink = {
     price: number;
     color: string;
     bgColor: string;
-    bgColorLight: string;
     imageUrl: string;
 };
 

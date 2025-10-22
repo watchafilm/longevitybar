@@ -18,9 +18,6 @@ export default {
         'drink-green': '#00bf63',
         'drink-red': '#71191f',
         'drink-yellow': '#cca300',
-        'drink-green-light': 'rgba(0, 191, 99, 0.1)',
-        'drink-red-light': 'rgba(113, 25, 31, 0.1)',
-        'drink-yellow-light': 'rgba(204, 163, 0, 0.1)',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

@@ -73,8 +73,17 @@ export default function KitchenDisplay() {
     const isServing = servingItemId === uniqueItemId;
     const drinkInfo = DRINKS.find(d => d.id === item.items[itemIndex].drinkId);
 
+    const getBgColorClass = (drinkId: string) => {
+      switch (drinkId) {
+        case 'drink_1': return 'bg-drink-green/10';
+        case 'drink_2': return 'bg-drink-red/10';
+        case 'drink_3': return 'bg-drink-yellow/10';
+        default: return '';
+      }
+    }
+
     return (
-      <TableRow key={uniqueItemId} className={cn(drinkInfo?.bgColorLight)}>
+      <TableRow key={uniqueItemId} className={cn(drinkInfo ? getBgColorClass(drinkInfo.id) : '')}>
         <TableCell>{new Date(item.createdAt).toLocaleTimeString()}</TableCell>
         <TableCell className="font-medium">{item.items[itemIndex].name}</TableCell>
         <TableCell>{item.items[itemIndex].quantity}</TableCell>
