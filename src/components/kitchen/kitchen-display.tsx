@@ -51,9 +51,10 @@ function KitchenSkeleton() {
 export default function KitchenDisplay() {
   const { orders, loading } = useOrders('pending');
   const [isPending, startTransition] = useTransition();
-  const [servingOrderId, setServingOrderId] = useState<string | null>(null);
+  const [servingStates, setServingStates] = useState<Record<string, boolean>>({});
 
   const flattenedItems = useMemo(() => {
+    if (!orders) return [];
     const allItems: FlattenedOrderItem[] = [];
     orders.forEach((order: Order) => {
       order.items.forEach((item: OrderItem) => {
@@ -69,17 +70,16 @@ export default function KitchenDisplay() {
         }
       });
     });
-    // Sort by creation time
+    // Sort by creation time, oldest first
     return allItems.sort((a, b) => a.orderCreatedAt.getTime() - b.orderCreatedAt.getTime());
   }, [orders]);
 
   const handleServeOrder = (orderId: string) => {
-    setServingOrderId(orderId);
+    setServingStates(prev => ({ ...prev, [orderId]: true }));
     startTransition(async () => {
       // Note: This action marks the entire order as served.
-      // For individual item status, the action and data model would need modification.
       await updateOrderStatus(orderId, 'served');
-      setServingOrderId(null);
+      // No need to set serving state to false, as the item will disappear from the list
     });
   };
 
@@ -110,7 +110,9 @@ export default function KitchenDisplay() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {flattenedItems.map((item, index) => (
+            {flattenedItems.map((item, index) => {
+              const isServing = servingStates[item.orderId] || false;
+              return (
               <TableRow key={`${item.orderId}-${item.drinkId}-${index}`}>
                 <TableCell className="font-semibold">{item.name}</TableCell>
                 <TableCell>
@@ -119,7 +121,7 @@ export default function KitchenDisplay() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={item.orderStatus === 'served' ? 'default' : 'secondary'} className={cn(item.orderStatus === 'served' ? 'bg-green-500/80 text-white' : 'bg-yellow-500/80 text-white')}>
+                  <Badge variant={'secondary'} className={cn('bg-yellow-500/80 text-white')}>
                     {item.orderStatus}
                   </Badge>
                 </TableCell>
@@ -127,9 +129,9 @@ export default function KitchenDisplay() {
                   <Button
                     size="sm"
                     onClick={() => handleServeOrder(item.orderId)}
-                    disabled={isPending && servingOrderId === item.orderId}
+                    disabled={isServing}
                   >
-                    {isPending && servingOrderId === item.orderId ? (
+                    {isServing ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Coffee className="mr-2 h-4 w-4" />
@@ -138,7 +140,7 @@ export default function KitchenDisplay() {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
           </TableBody>
         </Table>
       </CardContent>

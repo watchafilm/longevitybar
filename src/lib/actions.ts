@@ -4,12 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { collection, doc, serverTimestamp, getFirestore } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { OrderPayload } from '@/lib/types';
-import { addDoc, updateDoc } from 'firebase/firestore';
+import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 
 export async function createOrder(orderData: OrderPayload) {
   try {
     const ordersCollection = collection(db, 'orders');
-    await addDoc(ordersCollection, {
+    await addDocumentNonBlocking(ordersCollection, {
       ...orderData,
       status: 'pending',
       createdAt: serverTimestamp(),
@@ -28,7 +28,7 @@ export async function createOrder(orderData: OrderPayload) {
 export async function updateOrderStatus(orderId: string, status: 'pending' | 'served') {
   try {
     const orderRef = doc(db, 'orders', orderId);
-    await updateDoc(orderRef, { status });
+    await updateDocumentNonBlocking(orderRef, { status });
 
     revalidatePath('/kitchen');
     revalidatePath('/summary');

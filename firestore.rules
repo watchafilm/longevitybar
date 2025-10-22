@@ -1,34 +1,28 @@
 /**
- * @fileoverview Firestore Security Rules for SipSwift Drink Ordering App
+ * @fileoverview Firestore Security Rules for the SipSwift drink ordering application.
  *
  * Core Philosophy:
- * This ruleset focuses on securing access to drink menu data and customer orders.
- * The drinks collection is publicly readable but only writable by admins (simulated by `false` for now).
- * The orders collection allows anyone to create orders, but updates and deletes are denied.
+ * The ruleset provides open read access to drinks menu and open read/write access to orders,
+ * allowing for real-time order management and data integrity. Write access to drinks is disallowed.
  *
  * Data Structure:
- * /drinks/{drinkId}: Stores drink menu items.
- * /orders/{orderId}: Stores customer order details.
+ * - /drinks/{drinkId}: Stores drink menu items.
+ * - /orders/{orderId}: Stores customer orders.
  *
  * Key Security Decisions:
- * - Drink menu data is publicly readable.
- * - Order creation is allowed for all users (no authentication required), which might need further restrictions in a production environment.
- * - Order updates and deletes are explicitly denied for all users.
- *
- * Denormalization for Authorization:
- * Not applicable in this simplified scenario as no specific user roles or ownership is defined.
+ * - Public read access to drink menu for ease of use.
+ * - Open read/write access to orders for any user.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to drink menu items, with write access denied.
+     * @description Grants public read access to drinks and prevents write access.
      * @path /drinks/{drinkId}
-     * @allow get, list: Any user can read the drink menu.
-     * @allow create, update, delete: No one can modify or delete drinks.
-     * @deny create, update, delete: All write operations are denied.
-     * @principle Public read access, restricted write access.
+     * @allow (get, list) Any user can read the drink menu.
+     * @deny (create, update, delete) No user can write to the drink menu.
+     * @principle Allows public read access to static drink menu data.
      */
     match /drinks/{drinkId} {
       allow get, list: if true;
@@ -36,16 +30,15 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows anyone to create orders, but restricts updates and deletes.
+     * @description Grants any user read/write access to orders.
      * @path /orders/{orderId}
-     * @allow create: Any user can place an order.
-     * @deny update, delete: No one can modify or delete orders.
-     * @principle Open order creation, restricted modification.
+     * @allow (create, update, delete) Any authenticated user can create, update, or delete an order.
+     * @allow (get, list) Any authenticated user can read an order.
+     * @deny None.
+     * @principle Allows for real-time order management without ownership restrictions.
      */
     match /orders/{orderId} {
-      allow get, list: if true;
-      allow create: if true;
-      allow update, delete: if false;
+      allow get, list, create, update, delete: if true;
     }
   }
 }
