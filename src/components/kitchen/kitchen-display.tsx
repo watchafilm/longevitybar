@@ -91,14 +91,6 @@ export default function KitchenDisplay() {
     );
   };
 
-  if (isLoading) {
-    return <div>Loading orders...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">Error loading orders: {error.message}</div>;
-  }
-
   const sortedAndFlattenedOrders = useMemo(() => {
     if (!orders) return [];
 
@@ -128,6 +120,14 @@ export default function KitchenDisplay() {
     return allItems.map(({ order, itemIndex }) => renderOrderRow(order, itemIndex));
 
   }, [orders, servingItemId, isPending]);
+
+  if (isLoading) {
+    return <div>Loading orders...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">Error loading orders: {error.message}</div>;
+  }
 
   return (
     <Card>
