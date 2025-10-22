@@ -1,0 +1,49 @@
+/**
+ * @fileoverview Firestore Security Rules for the SipSwift drink ordering application.
+ *
+ * Core Philosophy:
+ * This ruleset provides public read access to the drink menu, while allowing unrestricted access to orders for authenticated users.
+ *
+ * Data Structure:
+ * - /drinks/{drinkId}: Stores static drink menu data.
+ * - /orders/{orderId}: Stores customer orders.
+ *
+ * Key Security Decisions:
+ * - Drink menu data is publicly readable.
+ * - All authenticated users can create, read, update, and delete orders.
+ * - No user-based ownership is enforced on orders, as every staff member can view and manage all orders.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Allows public read access to drink menu items.
+     * @path /drinks/{drinkId}
+     * @allow (get, list) Access to anyone.
+     * @deny (create, update, delete) Denies access to anyone.
+     * @principle Allows public read access to the drink menu, while restricting writes.
+     */
+    match /drinks/{drinkId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Allows authenticated users to create, read, update, and delete orders.
+     * @path /orders/{orderId}
+     * @allow (create, get, list, update, delete) Access to authenticated user.
+     * @deny None.
+     * @principle Allows orders management by any authenticated user.
+     */
+    match /orders/{orderId} {
+      allow read, create, update, delete: if isSignedIn();
+      allow list: if isSignedIn();
+    }
+
+    // Helper function to determine if a user is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+  }
+}
