@@ -9,14 +9,14 @@ export function AppHeader() {
       <div className="flex h-14 items-center justify-center">
         <Link href="/" className="flex items-center space-x-2">
           <Image src="https://pic.onlinewebfonts.com/thumbnails/icons_285144.svg" alt="Longevity Bar Logo" width={24} height={24} className="h-6 w-6" />
-          <h1 className="font-headline font-bold text-2xl">
-            <span className="text-purple-500">Lo</span>
-            <span className="text-blue-500">ng</span>
-            <span className="text-green-500">ev</span>
-            <span className="text-yellow-500">ity</span>
+          <h1 className="font-headline font-bold text-3xl">
+            <span className="bg-gradient-to-r from-purple-400 to-purple-600 text-transparent bg-clip-text">Lo</span>
+            <span className="bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">ng</span>
+            <span className="bg-gradient-to-r from-green-400 to-green-600 text-transparent bg-clip-text">ev</span>
+            <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-transparent bg-clip-text">ity</span>
             <span> </span>
-            <span className="text-orange-500">Ba</span>
-            <span className="text-red-500">r</span>
+            <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text">Ba</span>
+            <span className="bg-gradient-to-r from-red-400 to-red-600 text-transparent bg-clip-text">r</span>
           </h1>
         </Link>
       </div>
