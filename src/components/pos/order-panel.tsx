@@ -146,9 +146,9 @@ export default function OrderPanel() {
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
             <CardDescription>Review items before confirming</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 flex-grow overflow-y-auto">
+          <CardContent className="flex-grow flex flex-col">
             <Separator />
-            <div className="relative h-[320px] lg:h-auto lg:min-h-[200px] flex-grow">
+            <div className="relative flex-grow h-[320px] lg:h-auto lg:min-h-[200px]">
               <AnimatePresence mode="wait">
                 {showQr && qrCodeUrl ? (
                   <motion.div
@@ -157,7 +157,7 @@ export default function OrderPanel() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.3 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center text-center py-4"
+                    className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
                   >
                     <p className="mb-4 text-muted-foreground">
                       Scan to pay {totalAmount.toFixed(2)} THB
@@ -178,7 +178,7 @@ export default function OrderPanel() {
                         <p className="text-muted-foreground text-center py-8">No items in order.</p>
                       </div>
                     ) : (
-                      <div className="max-h-full overflow-y-auto pr-2 flex-grow">
+                      <div className="h-full overflow-y-auto pr-2">
                         {orderItems.map((item) => (
                           <div key={item.name} className="flex items-center justify-between py-2">
                             <div>
