@@ -148,58 +148,63 @@ export default function OrderPanel() {
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
             <Separator />
-            <AnimatePresence mode="wait">
-              {showQr && qrCodeUrl ? (
-                <motion.div
-                  key="qr-code"
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -50 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col items-center justify-center text-center py-4"
-                >
-                  <p className="mb-4 text-muted-foreground">
-                    Scan to pay {totalAmount.toFixed(2)} THB
-                  </p>
-                  <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="order-items"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {orderItems.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">No items in order.</p>
-                  ) : (
-                    <div className="max-h-60 lg:max-h-none overflow-y-auto pr-2 flex-grow">
-                      {orderItems.map((item) => (
-                        <div key={item.name} className="flex items-center justify-between py-2">
-                          <div>
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-muted-foreground">{item.price} THB</p>
+            <div className="relative h-[320px] lg:h-auto lg:min-h-[200px] flex-grow">
+              <AnimatePresence mode="wait">
+                {showQr && qrCodeUrl ? (
+                  <motion.div
+                    key="qr-code"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center text-center py-4"
+                  >
+                    <p className="mb-4 text-muted-foreground">
+                      Scan to pay {totalAmount.toFixed(2)} THB
+                    </p>
+                    <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="order-items"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0"
+                  >
+                    {orderItems.length === 0 ? (
+                      <div className="flex items-center justify-center h-full">
+                        <p className="text-muted-foreground text-center py-8">No items in order.</p>
+                      </div>
+                    ) : (
+                      <div className="max-h-full overflow-y-auto pr-2 flex-grow">
+                        {orderItems.map((item) => (
+                          <div key={item.name} className="flex items-center justify-between py-2">
+                            <div>
+                              <p className="font-semibold">{item.name}</p>
+                              <p className="text-sm text-muted-foreground">{item.price} THB</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
+                                  <MinusCircle className="h-4 w-4"/>
+                              </Button>
+                              <span className="font-bold w-4 text-center">{item.quantity}</span>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
+                                  <PlusCircle className="h-4 w-4"/>
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
-                                <MinusCircle className="h-4 w-4"/>
-                            </Button>
-                            <span className="font-bold w-4 text-center">{item.quantity}</span>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
-                                <PlusCircle className="h-4 w-4"/>
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </CardContent>
           <CardFooter className="flex-col !p-4 !pt-0 mt-auto bg-card">
             <div className="w-full">
