@@ -10,6 +10,8 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase/provider';
 import { doc, updateDoc } from 'firebase/firestore';
+import { DRINKS } from '@/lib/data';
+import { cn } from '@/lib/utils';
 
 export default function KitchenDisplay() {
   const { orders, isLoading, error } = useOrders();
@@ -68,9 +70,10 @@ export default function KitchenDisplay() {
     const itemStatus = item.itemStatuses?.[itemIndex] || 'pending';
     const uniqueItemId = `${item.id}-${itemIndex}`;
     const isServing = servingItemId === uniqueItemId;
+    const drinkInfo = DRINKS.find(d => d.id === item.items[itemIndex].drinkId);
 
     return (
-      <TableRow key={uniqueItemId}>
+      <TableRow key={uniqueItemId} className={cn(drinkInfo?.bgColorLight)}>
         <TableCell>{new Date(item.createdAt).toLocaleTimeString()}</TableCell>
         <TableCell className="font-medium">{item.items[itemIndex].name}</TableCell>
         <TableCell>{item.items[itemIndex].quantity}</TableCell>
