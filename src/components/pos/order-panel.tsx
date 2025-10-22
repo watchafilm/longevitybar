@@ -12,9 +12,9 @@ import { createOrder } from '@/lib/actions';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
 
 const DRINKS: Drink[] = [
-  { name: 'Green', price: 88, color: 'text-green-500', bgColor: 'bg-green-500' },
-  { name: 'Red', price: 88, color: 'text-red-500', bgColor: 'bg-red-500' },
-  { name: 'Yellow', price: 88, color: 'text-yellow-500', bgColor: 'bg-yellow-500' },
+  { name: 'Bitkub Awakening', price: 88, color: 'text-green-500', bgColor: 'bg-green-500' },
+  { name: 'Crimson Flow', price: 88, color: 'text-red-500', bgColor: 'bg-red-500' },
+  { name: 'Elysian Pulse', price: 88, color: 'text-yellow-500', bgColor: 'bg-yellow-500' },
 ];
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
