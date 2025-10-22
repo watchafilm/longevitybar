@@ -16,9 +16,9 @@ import { collection, serverTimestamp } from 'firebase/firestore';
 
 
 const DRINKS: Drink[] = [
-  { id: 'drink_1', name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
-  { id: 'drink_2', name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red' },
-  { id: 'drink_3', name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow' },
+  { id: 'drink_1', name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green', bgColorLight: 'bg-drink-green/10' },
+  { id: 'drink_2', name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red', bgColorLight: 'bg-drink-red/10' },
+  { id: 'drink_3', name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow', bgColorLight: 'bg-drink-yellow/10' },
 ];
 
 const QR_CODE_URLS = {
@@ -140,7 +140,7 @@ export default function OrderPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className="overflow-hidden group flex-1 flex flex-col h-full">
+            <Card key={drink.name} className={cn("overflow-hidden group flex-1 flex flex-col h-full", drink.bgColorLight)}>
                  <div className="flex items-center h-full">
                     <div className={cn("w-24 h-full flex-shrink-0", drink.bgColor)}></div>
                     <div className="flex-grow p-4">

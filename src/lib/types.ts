@@ -6,6 +6,7 @@ export type Drink = {
     price: number;
     color: string;
     bgColor: string;
+    bgColorLight: string;
 };
 
 export type OrderItem = {
