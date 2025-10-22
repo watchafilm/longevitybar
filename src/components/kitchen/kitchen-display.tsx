@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useOrders, type ExpandedOrder } from '@/lib/hooks/use-orders';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,8 +14,12 @@ export default function KitchenDisplay() {
   const { orders, isLoading, error } = useOrders();
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const [servingItemId, setServingItemId] = useState<string | null>(null);
 
   const handleServe = (orderId: string, itemIndex: number, newStatus: 'served') => {
+    const uniqueItemId = `${orderId}-${itemIndex}`;
+    setServingItemId(uniqueItemId);
+
     startTransition(async () => {
       try {
         const result = await updateOrderStatus(orderId, itemIndex, newStatus);
@@ -33,15 +37,19 @@ export default function KitchenDisplay() {
           title: 'Update Failed',
           description: e.message || 'Could not update order status.',
         });
+      } finally {
+        setServingItemId(null);
       }
     });
   };
 
   const renderOrderRow = (item: ExpandedOrder, itemIndex: number) => {
     const itemStatus = item.itemStatuses?.[itemIndex] || 'pending';
+    const uniqueItemId = `${item.id}-${itemIndex}`;
+    const isServing = servingItemId === uniqueItemId;
 
     return (
-      <TableRow key={`${item.id}-${itemIndex}`}>
+      <TableRow key={uniqueItemId}>
         <TableCell>{new Date(item.createdAt).toLocaleTimeString()}</TableCell>
         <TableCell className="font-medium">{item.items[itemIndex].name}</TableCell>
         <TableCell>{item.items[itemIndex].quantity}</TableCell>
@@ -52,9 +60,9 @@ export default function KitchenDisplay() {
           <Button
             size="sm"
             onClick={() => handleServe(item.id, itemIndex, 'served')}
-            disabled={isPending || itemStatus === 'served'}
+            disabled={isPending || itemStatus === 'served' || isServing}
           >
-            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {isServing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Serve
           </Button>
         </TableCell>
