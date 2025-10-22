@@ -98,97 +98,101 @@ export default function OrderPanel() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      <div className="lg:col-span-2">
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="flex-1 w-full">
         <h1 className="font-headline text-4xl font-bold mb-6">Point of Sale</h1>
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-4">
           {DRINKS.map((drink) => (
             <Card key={drink.name} className="overflow-hidden group">
-              <CardHeader className="p-0">
-                <div className={cn("h-32 w-full", drink.bgColor)}></div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <h3 className={`font-headline text-2xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                <p className="text-muted-foreground font-medium">{drink.price} THB</p>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button className="w-full" onClick={() => handleAddItem(drink)}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add to Order
-                </Button>
-              </CardFooter>
+              <div className="flex flex-col sm:flex-row">
+                <div className={cn("h-32 sm:h-auto sm:w-48 flex-shrink-0", drink.bgColor)}></div>
+                <div className="flex-grow flex flex-col">
+                  <CardContent className="p-4 flex-grow">
+                    <h3 className={`font-headline text-2xl font-semibold ${drink.color}`}>{drink.name}</h3>
+                    <p className="text-muted-foreground font-medium">{drink.price} THB</p>
+                  </CardContent>
+                  <CardFooter className="p-4 pt-0">
+                    <Button className="w-full sm:w-auto" onClick={() => handleAddItem(drink)}>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add to Order
+                    </Button>
+                  </CardFooter>
+                </div>
+              </div>
             </Card>
           ))}
         </div>
       </div>
 
-      <Card className="sticky top-20">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
-          <CardDescription>Review items before confirming</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Separator />
-          {orderItems.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">No items in order.</p>
-          ) : (
-            <div className="max-h-60 overflow-y-auto pr-2">
-              {orderItems.map((item) => (
-                <div key={item.name} className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">{item.price} THB</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
-                        <MinusCircle className="h-4 w-4"/>
-                    </Button>
-                    <span className="font-bold w-4 text-center">{item.quantity}</span>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
-                        <PlusCircle className="h-4 w-4"/>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <Separator />
-          <div className="space-y-2">
-            <h4 className="font-headline text-lg">Payment Method</h4>
-            <div className="grid grid-cols-3 gap-2">
-              {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
-                <Button
-                  key={id}
-                  variant={paymentMethod === id ? 'default' : 'outline'}
-                  onClick={() => setPaymentMethod(id)}
-                  className="flex flex-col h-16"
-                >
-                  <Icon className="h-6 w-6 mb-1" />
-                  <span className="text-xs">{label}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-          <Separator />
-          <div className="flex justify-between items-center">
-            <span className="font-headline text-lg">Total</span>
-            <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting...
-              </>
+      <div className="w-full lg:w-96 lg:sticky lg:top-20">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
+            <CardDescription>Review items before confirming</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Separator />
+            {orderItems.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">No items in order.</p>
             ) : (
-              'Confirm Payment'
+              <div className="max-h-60 overflow-y-auto pr-2">
+                {orderItems.map((item) => (
+                  <div key={item.name} className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="font-semibold">{item.name}</p>
+                      <p className="text-sm text-muted-foreground">{item.price} THB</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
+                          <MinusCircle className="h-4 w-4"/>
+                      </Button>
+                      <span className="font-bold w-4 text-center">{item.quantity}</span>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
+                          <PlusCircle className="h-4 w-4"/>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </Button>
-        </CardFooter>
-      </Card>
+            <Separator />
+            <div className="space-y-2">
+              <h4 className="font-headline text-lg">Payment Method</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
+                  <Button
+                    key={id}
+                    variant={paymentMethod === id ? 'default' : 'outline'}
+                    onClick={() => setPaymentMethod(id)}
+                    className="flex flex-col h-16"
+                  >
+                    <Icon className="h-6 w-6 mb-1" />
+                    <span className="text-xs">{label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <Separator />
+            <div className="flex justify-between items-center">
+              <span className="font-headline text-lg">Total</span>
+              <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting...
+                </>
+              ) : (
+                'Confirm Payment'
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
