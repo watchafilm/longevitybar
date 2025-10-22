@@ -1,49 +1,43 @@
 /**
- * @fileoverview Firestore Security Rules for the SipSwift drink ordering application.
- *
- * Core Philosophy:
- * This ruleset provides public read access to the drink menu, while allowing unrestricted access to orders for authenticated users.
- *
- * Data Structure:
- * - /drinks/{drinkId}: Stores static drink menu data.
- * - /orders/{orderId}: Stores customer orders.
- *
- * Key Security Decisions:
- * - Drink menu data is publicly readable.
- * - All authenticated users can create, read, update, and delete orders.
- * - No user-based ownership is enforced on orders, as every staff member can view and manage all orders.
+ * @description: This ruleset governs access to the Firestore database for the SipSwift drink ordering application. It enforces public read access to the drink menu and open access to orders.
+ * @dataStructure:
+ *   - /drinks/{drinkId}: Stores static drink menu data.
+ *   - /orders/{orderId}: Stores customer orders.
+ * @keySecurityDecisions:
+ *   - Drink data is publicly readable to allow anyone to view the menu.
+ *   - Order data is openly accessible (both read and write), so any user can create, update, or read orders.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to drink menu items.
+     * @description Allows anyone to read the drink menu.  Writes are not permitted.
      * @path /drinks/{drinkId}
-     * @allow (get, list) Access to anyone.
-     * @deny (create, update, delete) Denies access to anyone.
-     * @principle Allows public read access to the drink menu, while restricting writes.
+     * @allow get, list: Public access to read the menu.
+     * @deny create, update, delete: No one can create, update, or delete drinks via the client.
+     * @principle: Public read access for menu data.
      */
     match /drinks/{drinkId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     /**
-     * @description Allows authenticated users to create, read, update, and delete orders.
+     * @description Allows anyone to read, create, update and delete orders.
      * @path /orders/{orderId}
-     * @allow (create, get, list, update, delete) Access to authenticated user.
-     * @deny None.
-     * @principle Allows orders management by any authenticated user.
+     * @allow get, list, create, update, delete: Public access to read and write orders.
+     * @principle: Open access for order data.
      */
     match /orders/{orderId} {
-      allow read, create, update, delete: if isSignedIn();
-      allow list: if isSignedIn();
-    }
-
-    // Helper function to determine if a user is signed in
-    function isSignedIn() {
-      return request.auth != null;
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
   }
 }
