@@ -145,26 +145,24 @@ export default function OrderPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className={cn("overflow-hidden group flex flex-col flex-grow", getBgColorClass(drink.id))}>
-                 <div className="flex flex-col flex-grow">
-                    <div className="relative w-full flex-grow flex items-center justify-center p-4">
-                        <Image
-                            src={drink.imageUrl}
-                            alt={drink.name}
-                            fill
-                            className="object-contain transform group-hover:scale-110 transition-transform duration-300"
-                        />
+            <Card key={drink.name} className={cn("overflow-hidden group flex flex-row", getBgColorClass(drink.id))}>
+                <div className="relative w-48 h-full">
+                    <Image
+                        src={drink.imageUrl}
+                        alt={drink.name}
+                        fill
+                        className="object-contain transform group-hover:scale-110 transition-transform duration-300 p-4"
+                    />
+                </div>
+                <div className="flex flex-col p-4 flex-grow justify-center">
+                    <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
+                    <p className="text-muted-foreground font-medium mb-4">{drink.price} THB</p>
+                    <div className="mt-auto">
+                        <Button onClick={() => handleAddItem(drink)} className="w-full">
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add
+                        </Button>
                     </div>
-                     <div className="flex flex-col p-4 pt-0">
-                        <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                        <p className="text-muted-foreground font-medium mb-4">{drink.price} THB</p>
-                        <div className="mt-auto">
-                            <Button onClick={() => handleAddItem(drink)} className="w-full">
-                                <PlusCircle className="mr-2 h-4 w-4" /> Add
-                            </Button>
-                        </div>
-                    </div>
-                 </div>
+                </div>
             </Card>
         ))}
       </div>
