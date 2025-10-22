@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -14,14 +14,45 @@ export function LoginForm() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const authStatus = localStorage.getItem('isAuthenticated') === 'true'
+    setIsAuthenticated(authStatus)
+  }, [])
+
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     if (username === 'genfosis' && password === 'sisfogen') {
+      localStorage.setItem('isAuthenticated', 'true')
+      setIsAuthenticated(true)
       router.push('/')
+      router.refresh() // To re-trigger middleware and update layout
     } else {
       setError('Invalid username or password')
     }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated')
+    setIsAuthenticated(false)
+    router.push('/login')
+  }
+
+  if (isAuthenticated) {
+    return (
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">You are logged in</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleLogout} className="w-full">
+            Logout
+          </Button>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

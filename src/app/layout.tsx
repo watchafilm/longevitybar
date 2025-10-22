@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AppHeader } from '@/components/layout/header';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { headers } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'Longevity Bar',
@@ -14,6 +15,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = headers();
+  const pathname = headersList.get('x-next-pathname') || '';
+  const showHeader = pathname !== '/login';
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -24,7 +29,7 @@ export default function RootLayout({
       <body className="font-body antialiased h-full">
         <FirebaseClientProvider>
           <div className="flex flex-col min-h-screen">
-            <AppHeader />
+            {showHeader && <AppHeader />}
             <main className="flex-1">
               {children}
             </main>
