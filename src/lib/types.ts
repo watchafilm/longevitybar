@@ -1,6 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
 
 export type Drink = {
+    id: string;
     name: 'Bitkub Awakening' | 'Crimson Flow' | 'Elysian Pulse';
     price: number;
     color: string;

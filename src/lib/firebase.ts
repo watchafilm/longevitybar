@@ -1,3 +1,5 @@
+// This file is deprecated and will be removed in a future update.
+// Please use the Firebase instance from @/firebase/provider instead.
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 

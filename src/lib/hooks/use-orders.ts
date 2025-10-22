@@ -1,22 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { useState, useEffect, useMemo } from 'react';
+import { collection, query, where, onSnapshot, orderBy, Query, CollectionReference, DocumentData } from 'firebase/firestore';
+import { useFirestore, useMemoFirebase } from '@/firebase';
 import type { Order, OrderStatus } from '@/lib/types';
 
+
 export function useOrders(status: OrderStatus) {
+  const firestore = useFirestore();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const q = query(
-      collection(db, 'orders'),
+  const ordersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(
+      collection(firestore, 'orders'),
       where('status', '==', status),
       orderBy('createdAt', 'asc')
     );
+  }, [firestore, status]);
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  useEffect(() => {
+    if (!ordersQuery) {
+        setLoading(false);
+        return;
+    }
+    setLoading(true);
+    const unsubscribe = onSnapshot(ordersQuery, (querySnapshot) => {
       const ordersData: Order[] = [];
       querySnapshot.forEach((doc) => {
         ordersData.push({ id: doc.id, ...doc.data() } as Order);
@@ -29,22 +39,30 @@ export function useOrders(status: OrderStatus) {
     });
 
     return () => unsubscribe();
-  }, [status]);
+  }, [ordersQuery]);
 
   return { orders, loading };
 }
 
 export function useAllOrders() {
+    const firestore = useFirestore();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
   
+    const allOrdersQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return query(
+            collection(firestore, 'orders'),
+            orderBy('createdAt', 'desc')
+        );
+    }, [firestore]);
+
     useEffect(() => {
-      const q = query(
-        collection(db, 'orders'),
-        orderBy('createdAt', 'desc')
-      );
-  
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        if(!allOrdersQuery) {
+            setLoading(false);
+            return;
+        }
+      const unsubscribe = onSnapshot(allOrdersQuery, (querySnapshot) => {
         const ordersData: Order[] = [];
         querySnapshot.forEach((doc) => {
           ordersData.push({ id: doc.id, ...doc.data() } as Order);
@@ -57,7 +75,7 @@ export function useAllOrders() {
       });
   
       return () => unsubscribe();
-    }, []);
+    }, [allOrdersQuery]);
   
     return { orders, loading };
   }

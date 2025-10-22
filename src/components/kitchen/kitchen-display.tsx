@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { updateOrderStatus } from '@/lib/actions';
 import { formatDistanceToNow } from 'date-fns';
-import { useTransition } from 'react';
+import { useTransition, useState } from 'react';
 import { Loader2, Check } from 'lucide-react';
 
 function OrderCardSkeleton() {
@@ -111,6 +111,3 @@ export default function KitchenDisplay() {
     </div>
   );
 }
-
-// Stub useState to avoid React errors in server components
-const useState = (initialState: any) => [initialState, () => {}];

@@ -4,17 +4,17 @@ import { useState, useTransition, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { Wallet, QrCode, CreditCard, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { createOrder } from '@/lib/actions';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
 
+// This data can be moved to Firestore for dynamic management
 const DRINKS: Drink[] = [
-  { name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
-  { name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red' },
-  { name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow' },
+  { id: 'drink_1', name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
+  { id: 'drink_2', name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red' },
+  { id: 'drink_3', name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow' },
 ];
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
@@ -101,8 +101,8 @@ export default function OrderPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className="overflow-hidden group flex-1">
-                <div className="flex items-center h-full">
+            <Card key={drink.name} className="overflow-hidden group flex-1 flex flex-col h-full">
+                 <div className="flex items-center h-full">
                     <div className={cn("w-24 h-full flex-shrink-0", drink.bgColor)}></div>
                     <div className="flex-grow p-4">
                         <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
