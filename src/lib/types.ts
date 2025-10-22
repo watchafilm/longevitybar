@@ -1,3 +1,4 @@
+
 import { Timestamp } from "firebase/firestore";
 
 export type Drink = {
@@ -30,3 +31,9 @@ export type Order = {
 };
 
 export type OrderPayload = Omit<Order, 'id' | 'createdAt' | 'status'>;
+
+export type Summary = {
+    totalRevenue: number;
+    totalOrders: number;
+    mostPopularDrink: string;
+};
