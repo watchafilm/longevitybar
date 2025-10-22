@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
-import { useCollection, useFirebase } from '@/firebase';
+import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
+import { useCollection, useFirebase, useMemoFirebase } from '@/firebase';
 import type { Order, OrderItem } from '@/lib/types';
 
 export interface ExpandedOrder extends Order {
@@ -24,7 +24,7 @@ const convertOrder = (doc: any): ExpandedOrder => {
 export const useOrders = () => {
   const { firestore } = useFirebase();
 
-  const q = useMemo(() => {
+  const q = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(
         collection(firestore, 'orders'),
