@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { useOrders, type ExpandedOrder } from '@/lib/hooks/use-orders';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -99,9 +99,35 @@ export default function KitchenDisplay() {
     return <div className="text-red-500">Error loading orders: {error.message}</div>;
   }
 
-  const flattenedOrders = orders?.flatMap(order =>
-    order.items.map((_, itemIndex) => renderOrderRow(order, itemIndex))
-  );
+  const sortedAndFlattenedOrders = useMemo(() => {
+    if (!orders) return [];
+
+    const allItems: { order: ExpandedOrder; itemIndex: number }[] = [];
+    orders.forEach(order => {
+        order.items.forEach((_, itemIndex) => {
+            allItems.push({ order, itemIndex });
+        });
+    });
+
+    allItems.sort((a, b) => {
+        const statusA = a.order.itemStatuses?.[a.itemIndex] || 'pending';
+        const statusB = b.order.itemStatuses?.[b.itemIndex] || 'pending';
+
+        // Rule 1: Unserved items first
+        if (statusA === 'pending' && statusB === 'served') {
+            return -1;
+        }
+        if (statusA === 'served' && statusB === 'pending') {
+            return 1;
+        }
+
+        // Rule 2: Older orders first (applies within status groups)
+        return a.order.createdAt - b.order.createdAt;
+    });
+
+    return allItems.map(({ order, itemIndex }) => renderOrderRow(order, itemIndex));
+
+  }, [orders, servingItemId, isPending]);
 
   return (
     <Card>
@@ -116,7 +142,7 @@ export default function KitchenDisplay() {
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>{flattenedOrders && flattenedOrders.length > 0 ? flattenedOrders : <TableRow><TableCell colSpan={5} className="text-center">No pending orders.</TableCell></TableRow>}</TableBody>
+          <TableBody>{sortedAndFlattenedOrders.length > 0 ? sortedAndFlattenedOrders : <TableRow><TableCell colSpan={5} className="text-center">No pending orders.</TableCell></TableRow>}</TableBody>
         </Table>
       </CardContent>
     </Card>
