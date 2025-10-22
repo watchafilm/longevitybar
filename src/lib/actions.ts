@@ -1,23 +1,14 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { collection, doc, serverTimestamp, getFirestore } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import type { OrderPayload } from '@/lib/types';
-import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 
+// This is a mock function since we removed Firebase.
+// In a real application, this would interact with a database.
 export async function createOrder(orderData: OrderPayload) {
   try {
-    const ordersCollection = collection(db, 'orders');
-    await addDocumentNonBlocking(ordersCollection, {
-      ...orderData,
-      status: 'pending',
-      createdAt: serverTimestamp(),
-    });
-
-    revalidatePath('/kitchen');
-    revalidatePath('/summary');
-    
+    console.log('Order created:', orderData);
+    // Simulate a successful API call
+    await new Promise(resolve => setTimeout(resolve, 500)); 
     return { success: true, message: 'Order created successfully.' };
   } catch (error) {
     console.error('Error in createOrder action:', error);
@@ -25,14 +16,12 @@ export async function createOrder(orderData: OrderPayload) {
   }
 }
 
+// This is a mock function since we removed Firebase.
 export async function updateOrderStatus(orderId: string, status: 'pending' | 'served') {
   try {
-    const orderRef = doc(db, 'orders', orderId);
-    await updateDocumentNonBlocking(orderRef, { status });
-
-    revalidatePath('/kitchen');
-    revalidatePath('/summary');
-
+    console.log(`Order ${orderId} status updated to ${status}`);
+    // Simulate a successful API call
+    await new Promise(resolve => setTimeout(resolve, 500));
     return { success: true, message: 'Order status updated.' };
   } catch (error) {
     console.error('Error in updateOrderStatus action:', error);

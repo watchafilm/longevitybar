@@ -1,9 +1,8 @@
 /**
- * @fileoverview Firestore Security Rules for SipSwift.
+ * @fileoverview Firestore Security Rules for the SipSwift application.
  *
  * Core Philosophy:
- * This ruleset enforces public read access to drink menu data and open access to order data.
- * There are no user-based restrictions.
+ * This ruleset provides public read access to drink menu data and allows unauthenticated users to create order data. Updates and deletes of order data are disallowed.
  *
  * Data Structure:
  * - /drinks/{drinkId}: Stores drink menu items.
@@ -11,37 +10,40 @@
  *
  * Key Security Decisions:
  * - Drink menu data is publicly readable.
- * - All users can create, read, update, and delete order data.
- * - No user-based ownership or roles are enforced.
+ * - Order creation is open to allow unauthenticated orders, but updates and deletes are denied.
+ * - No user-based ownership is enforced for orders, meaning all staff can view all orders.
+ * - No write operation is authorized, so there's no denormalization needed.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to drink menu items.  Anyone can create, read, update, and delete drinks.
+     * @description Grants public read access to drink menu items and restricts write access.
      * @path /drinks/{drinkId}
-     * @allow (get, list) Any user can read drink menu data.
-     * @allow (create, update, delete) Any user can modify drink menu data.
-     * @deny None.
-     * @principle Allows public access to static drink data.
+     * @allow get, list: Any user can read drink information.
+     * @allow create, update, delete: No one can create, update or delete drink information.
+     * @deny create, update, delete: if true; // No one is allowed to write to the drinks collection.
+     * @principle Provides public read access to menu data while preventing unauthorized modifications.
      */
     match /drinks/{drinkId} {
       allow get, list: if true;
-      allow create, update, delete: if true;
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Grants open access to order data. Anyone can create, read, update, and delete orders.
+     * @description Allows anyone to create orders, but prevents updates and deletes.
      * @path /orders/{orderId}
-     * @allow (get, list) Any user can read order data.
-     * @allow (create, update, delete) Any user can modify order data.
-     * @deny None.
-     * @principle Allows free access to order information.
+     * @allow create: Any user can create orders.
+     * @allow get, list: Any user can read order information.
+     * @allow update, delete: No one can update or delete orders.
+     * @deny update, delete: if true; // No one is allowed to update or delete orders.
+     * @principle Allows order creation while preventing modification or deletion of existing orders.
      */
     match /orders/{orderId} {
       allow get, list: if true;
-      allow create, update, delete: if true;
+      allow create: if true;
+      allow update, delete: if false;
     }
   }
 }
