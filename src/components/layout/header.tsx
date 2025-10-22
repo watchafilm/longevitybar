@@ -9,7 +9,7 @@ export function AppHeader() {
       <div className="flex h-14 items-center justify-center">
         <Link href="/" className="flex items-center space-x-2">
           <Image src="https://pic.onlinewebfonts.com/thumbnails/icons_285144.svg" alt="Longevity Bar Logo" width={40} height={40} className="h-10 w-10 filter invert-[.25] sepia-[1] saturate-[5] hue-rotate-[20deg]" />
-          <h1 className="font-headline font-bold text-4xl text-yellow-500">
+          <h1 className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text font-headline text-4xl font-bold text-transparent">
             Longevity Bar
           </h1>
         </Link>
