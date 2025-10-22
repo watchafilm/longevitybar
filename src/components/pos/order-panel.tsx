@@ -145,7 +145,7 @@ export default function OrderPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
-            <Card key={drink.name} className={cn("overflow-hidden group flex flex-row", getBgColorClass(drink.id))}>
+            <Card key={drink.name} className={cn("overflow-hidden group flex flex-row items-end", getBgColorClass(drink.id))}>
                 <div className="relative w-32 h-32">
                     <Image
                         src={drink.imageUrl}
