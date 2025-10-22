@@ -98,43 +98,40 @@ export default function OrderPanel() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="flex-1 w-full">
-        <h1 className="font-headline text-4xl font-bold mb-6">Point of Sale</h1>
-        <div className="grid grid-cols-1 gap-4">
+    <div className="flex flex-col lg:flex-row gap-8 items-start h-full">
+      <div className="flex-1 w-full flex flex-col">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 mb-auto">
           {DRINKS.map((drink) => (
             <Card key={drink.name} className="overflow-hidden group">
-              <div className="flex flex-col sm:flex-row">
-                <div className={cn("h-32 sm:h-auto sm:w-48 flex-shrink-0", drink.bgColor)}></div>
-                <div className="flex-grow flex flex-col">
-                  <CardContent className="p-4 flex-grow">
-                    <h3 className={`font-headline text-2xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                    <p className="text-muted-foreground font-medium">{drink.price} THB</p>
-                  </CardContent>
-                  <CardFooter className="p-4 pt-0">
-                    <Button className="w-full sm:w-auto" onClick={() => handleAddItem(drink)}>
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add to Order
-                    </Button>
-                  </CardFooter>
+                <div className="flex items-center">
+                    <div className={cn("w-24 h-24 flex-shrink-0", drink.bgColor)}></div>
+                    <div className="flex-grow p-4">
+                        <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
+                        <p className="text-muted-foreground font-medium">{drink.price} THB</p>
+                    </div>
+                    <div className="p-4">
+                        <Button onClick={() => handleAddItem(drink)}>
+                            <PlusCircle className="mr-2 h-4 w-4" /> Add
+                        </Button>
+                    </div>
                 </div>
-              </div>
             </Card>
           ))}
         </div>
       </div>
 
-      <div className="w-full lg:w-96 lg:sticky lg:top-20">
-        <Card>
+      <div className="w-full lg:w-96 lg:sticky lg:top-20 flex flex-col h-full">
+        <Card className="flex flex-col flex-grow">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
             <CardDescription>Review items before confirming</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 flex-grow">
             <Separator />
             {orderItems.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">No items in order.</p>
             ) : (
-              <div className="max-h-60 overflow-y-auto pr-2">
+              <div className="max-h-60 lg:max-h-full overflow-y-auto pr-2 flex-grow">
                 {orderItems.map((item) => (
                   <div key={item.name} className="flex items-center justify-between py-2">
                     <div>
@@ -157,30 +154,30 @@ export default function OrderPanel() {
                 ))}
               </div>
             )}
-            <Separator />
-            <div className="space-y-2">
-              <h4 className="font-headline text-lg">Payment Method</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    variant={paymentMethod === id ? 'default' : 'outline'}
-                    onClick={() => setPaymentMethod(id)}
-                    className="flex flex-col h-16"
-                  >
-                    <Icon className="h-6 w-6 mb-1" />
-                    <span className="text-xs">{label}</span>
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-center">
-              <span className="font-headline text-lg">Total</span>
-              <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
-            </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col !p-4 !pt-0 mt-auto">
+            <div className="w-full">
+                <Separator className="my-4"/>
+                <h4 className="font-headline text-lg mb-2">Payment Method</h4>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                    {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
+                    <Button
+                        key={id}
+                        variant={paymentMethod === id ? 'default' : 'outline'}
+                        onClick={() => setPaymentMethod(id)}
+                        className="flex flex-col h-16"
+                    >
+                        <Icon className="h-6 w-6 mb-1" />
+                        <span className="text-xs">{label}</span>
+                    </Button>
+                    ))}
+                </div>
+                <Separator className="my-4"/>
+                <div className="flex justify-between items-center mb-4">
+                <span className="font-headline text-lg">Total</span>
+                <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
+                </div>
+            </div>
             <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
               {isPending ? (
                 <>
