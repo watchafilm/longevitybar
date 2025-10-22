@@ -101,7 +101,7 @@ export default function OrderPanel() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
       <div className="lg:col-span-2">
         <h1 className="font-headline text-4xl font-bold mb-6">Point of Sale</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {DRINKS.map((drink) => (
             <Card key={drink.name} className="overflow-hidden group">
               <CardHeader className="p-0">
