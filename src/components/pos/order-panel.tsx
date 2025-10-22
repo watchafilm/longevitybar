@@ -100,7 +100,7 @@ export default function OrderPanel() {
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start h-full">
       <div className="flex-1 w-full flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 mb-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 mb-auto">
           {DRINKS.map((drink) => (
             <Card key={drink.name} className="overflow-hidden group">
                 <div className="flex items-center">
@@ -120,7 +120,7 @@ export default function OrderPanel() {
         </div>
       </div>
 
-      <div className="w-full lg:w-96 lg:sticky lg:top-20 flex flex-col h-full">
+      <div className="w-full lg:w-auto lg:flex-1 lg:sticky lg:top-20 flex flex-col h-full">
         <Card className="flex flex-col flex-grow">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
