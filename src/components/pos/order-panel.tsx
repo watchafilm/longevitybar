@@ -146,14 +146,13 @@ export default function OrderPanel() {
       <div className="flex flex-col gap-4">
         {DRINKS.map((drink) => (
             <Card key={drink.name} className={cn("overflow-hidden group flex flex-col flex-grow", getBgColorClass(drink.id))}>
-                 <div className="flex flex-row flex-grow items-end">
-                    <div className="relative w-48 h-48 flex-shrink-0">
+                 <div className="flex flex-col flex-grow">
+                    <div className="relative w-full aspect-square">
                         <Image
                             src={drink.imageUrl}
                             alt={drink.name}
-                            width={192}
-                            height={192}
-                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-300"
+                            fill
+                            className="object-contain transform group-hover:scale-110 transition-transform duration-300"
                         />
                     </div>
                      <div className="flex flex-col flex-grow p-4">
