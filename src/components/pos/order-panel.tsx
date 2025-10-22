@@ -25,8 +25,8 @@ const QR_CODE_URLS = {
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
   { id: 'cash', label: 'Cash', icon: Wallet },
-  { id: 'qr', label: 'QR Scan', icon: QrCode },
   { id: 'credit_card_qr', label: 'Credit Card QR', icon: CreditCard },
+  { id: 'qr', label: 'QR Scan', icon: QrCode },
 ];
 
 export default function OrderPanel() {
@@ -144,7 +144,7 @@ export default function OrderPanel() {
         <Card className="flex flex-col flex-grow">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
-            <CardDescription>
+            <CardDescription className="min-h-[20px]">
                 {showQr ? `Scan to pay ${totalAmount.toFixed(2)} THB` : "Review items before confirming"}
             </CardDescription>
           </CardHeader>
@@ -155,9 +155,9 @@ export default function OrderPanel() {
                 {showQr && qrCodeUrl ? (
                   <motion.div
                     key="qr-code"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -50 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
                   >
