@@ -15,6 +15,9 @@ export default {
         code: ['monospace'],
       },
       colors: {
+        'drink-green': '#00bf63',
+        'drink-red': '#71191f',
+        'drink-yellow': '#cca300',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

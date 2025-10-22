@@ -12,9 +12,9 @@ import { createOrder } from '@/lib/actions';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
 
 const DRINKS: Drink[] = [
-  { name: 'Bitkub Awakening', price: 88, color: 'text-green-500', bgColor: 'bg-green-500' },
-  { name: 'Crimson Flow', price: 88, color: 'text-red-500', bgColor: 'bg-red-500' },
-  { name: 'Elysian Pulse', price: 88, color: 'text-yellow-500', bgColor: 'bg-yellow-500' },
+  { name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
+  { name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red' },
+  { name: 'Elysian Pulse', price: 88, color: 'text-drink-yellow', bgColor: 'bg-drink-yellow' },
 ];
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
@@ -98,13 +98,12 @@ export default function OrderPanel() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start h-full">
-      <div className="flex-1 w-full flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 mb-auto">
-          {DRINKS.map((drink) => (
-            <Card key={drink.name} className="overflow-hidden group">
-                <div className="flex items-center">
-                    <div className={cn("w-24 h-24 flex-shrink-0", drink.bgColor)}></div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+      <div className="flex flex-col gap-4">
+        {DRINKS.map((drink) => (
+            <Card key={drink.name} className="overflow-hidden group flex-1">
+                <div className="flex items-center h-full">
+                    <div className={cn("w-24 h-full flex-shrink-0", drink.bgColor)}></div>
                     <div className="flex-grow p-4">
                         <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
                         <p className="text-muted-foreground font-medium">{drink.price} THB</p>
@@ -116,22 +115,21 @@ export default function OrderPanel() {
                     </div>
                 </div>
             </Card>
-          ))}
-        </div>
+        ))}
       </div>
 
-      <div className="w-full lg:w-auto lg:flex-1 lg:sticky lg:top-20 flex flex-col h-full">
+      <div className="flex flex-col h-full">
         <Card className="flex flex-col flex-grow">
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
             <CardDescription>Review items before confirming</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 flex-grow">
+          <CardContent className="space-y-4 flex-grow overflow-y-auto">
             <Separator />
             {orderItems.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">No items in order.</p>
             ) : (
-              <div className="max-h-60 lg:max-h-full overflow-y-auto pr-2 flex-grow">
+              <div className="max-h-60 lg:max-h-none overflow-y-auto pr-2 flex-grow">
                 {orderItems.map((item) => (
                   <div key={item.name} className="flex items-center justify-between py-2">
                     <div>
@@ -155,7 +153,7 @@ export default function OrderPanel() {
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex-col !p-4 !pt-0 mt-auto">
+          <CardFooter className="flex-col !p-4 !pt-0 mt-auto bg-card">
             <div className="w-full">
                 <Separator className="my-4"/>
                 <h4 className="font-headline text-lg mb-2">Payment Method</h4>
