@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'POS' },
+  { href: '/kitchen', label: 'Kitchen' },
 ];
 
 export function AppHeader() {

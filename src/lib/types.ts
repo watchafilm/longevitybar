@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type Drink = {
     id: string;
     name: 'Bitkub Awakening' | 'Crimson Flow' | 'Elysian Pulse';
@@ -23,7 +25,7 @@ export type Order = {
     totalAmount: number;
     paymentMethod: PaymentMethod;
     status: OrderStatus;
-    createdAt: Date;
+    createdAt: Timestamp | Date;
 };
 
 export type OrderPayload = Omit<Order, 'id' | 'createdAt' | 'status'>;
