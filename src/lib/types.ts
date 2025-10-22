@@ -24,7 +24,7 @@ export type Order = {
     totalAmount: number;
     paymentMethod: PaymentMethod;
     status: OrderStatus;
-    createdAt: Timestamp;
+    createdAt: Timestamp | Date;
 };
 
 export type OrderPayload = Omit<Order, 'id' | 'createdAt' | 'status'>;

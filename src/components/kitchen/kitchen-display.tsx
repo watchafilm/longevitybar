@@ -78,7 +78,7 @@ export default function KitchenDisplay() {
           <CardHeader>
             <CardTitle className="font-headline">Order #{order.id.slice(0, 5)}</CardTitle>
             <CardDescription>
-              {order.createdAt ? `${formatDistanceToNow(order.createdAt.toDate())} ago` : 'Just now'}
+              {order.createdAt ? `${formatDistanceToNow(order.createdAt)} ago` : 'Just now'}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">

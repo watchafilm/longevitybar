@@ -145,12 +145,23 @@ export default function OrderPanel() {
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
             <CardDescription className="min-h-[20px]">
-                {showQr ? `Scan to pay ${totalAmount.toFixed(2)} THB` : "Review items before confirming"}
+              <AnimatePresence initial={false} mode="wait">
+                <motion.span
+                  key={showQr ? 'qr-text' : 'review-text'}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="inline-block"
+                >
+                  {showQr ? `Scan to pay ${totalAmount.toFixed(2)} THB` : "Review items before confirming"}
+                </motion.span>
+              </AnimatePresence>
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <Separator />
-            <div className="relative flex-grow h-[320px] lg:h-auto lg:min-h-[200px] overflow-hidden">
+            <div className="relative flex-grow min-h-[260px] overflow-hidden">
               <AnimatePresence mode="wait">
                 {showQr && qrCodeUrl ? (
                   <motion.div

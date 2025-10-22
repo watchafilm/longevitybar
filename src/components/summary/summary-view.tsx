@@ -129,7 +129,7 @@ export default function SummaryView() {
                       </TableCell>
                       <TableCell className="text-right font-mono">{order.totalAmount.toFixed(2)}</TableCell>
                       <TableCell>
-                        {order.createdAt ? format(order.createdAt.toDate(), 'PPpp') : 'N/A'}
+                        {order.createdAt ? format(order.createdAt, 'PPpp') : 'N/A'}
                       </TableCell>
                     </TableRow>
                   );

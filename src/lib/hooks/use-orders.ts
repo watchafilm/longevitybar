@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { collection, query, where, onSnapshot, orderBy, Query, CollectionReference, DocumentData } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, Query, CollectionReference, DocumentData, Timestamp } from 'firebase/firestore';
 import { useFirestore, useMemoFirebase } from '@/firebase';
 import type { Order, OrderStatus } from '@/lib/types';
 
@@ -29,7 +29,13 @@ export function useOrders(status: OrderStatus) {
     const unsubscribe = onSnapshot(ordersQuery, (querySnapshot) => {
       const ordersData: Order[] = [];
       querySnapshot.forEach((doc) => {
-        ordersData.push({ id: doc.id, ...doc.data() } as Order);
+        const data = doc.data();
+        ordersData.push({ 
+          id: doc.id, 
+          ...data,
+          // Convert Firestore Timestamp to JS Date object
+          createdAt: (data.createdAt as Timestamp)?.toDate() || new Date()
+        } as Order);
       });
       setOrders(ordersData);
       setLoading(false);
@@ -65,7 +71,12 @@ export function useAllOrders() {
       const unsubscribe = onSnapshot(allOrdersQuery, (querySnapshot) => {
         const ordersData: Order[] = [];
         querySnapshot.forEach((doc) => {
-          ordersData.push({ id: doc.id, ...doc.data() } as Order);
+          const data = doc.data();
+          ordersData.push({ 
+            id: doc.id, 
+            ...data,
+            createdAt: (data.createdAt as Timestamp)?.toDate() || new Date()
+          } as Order);
         });
         setOrders(ordersData);
         setLoading(false);
