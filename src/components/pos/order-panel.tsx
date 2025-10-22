@@ -1,18 +1,17 @@
 'use client';
 
-import { useState, useTransition, useMemo, useEffect } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Wallet, QrCode, CreditCard, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { createOrder } from '@/lib/actions';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
+import { AnimatePresence, motion } from 'framer-motion';
 
-// This data can be moved to Firestore for dynamic management
 const DRINKS: Drink[] = [
   { id: 'drink_1', name: 'Bitkub Awakening', price: 88, color: 'text-drink-green', bgColor: 'bg-drink-green' },
   { id: 'drink_2', name: 'Crimson Flow', price: 88, color: 'text-drink-red', bgColor: 'bg-drink-red' },
@@ -35,7 +34,7 @@ export default function OrderPanel() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   const totalAmount = useMemo(() => {
@@ -46,7 +45,10 @@ export default function OrderPanel() {
     setPaymentMethod(method);
     if (method === 'qr' || method === 'credit_card_qr') {
       setQrCodeUrl(QR_CODE_URLS[method]);
-      setIsQrModalOpen(true);
+      setShowQr(true);
+    } else {
+      setShowQr(false);
+      setQrCodeUrl(null);
     }
   };
 
@@ -103,7 +105,8 @@ export default function OrderPanel() {
           action: <CheckCircle className="text-green-500" />,
         });
         setOrderItems([]);
-        setIsQrModalOpen(false);
+        setShowQr(false);
+        setPaymentMethod('cash');
       } else {
         toast({
           title: "Submission Failed",
@@ -145,32 +148,58 @@ export default function OrderPanel() {
           </CardHeader>
           <CardContent className="space-y-4 flex-grow overflow-y-auto">
             <Separator />
-            {orderItems.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No items in order.</p>
-            ) : (
-              <div className="max-h-60 lg:max-h-none overflow-y-auto pr-2 flex-grow">
-                {orderItems.map((item) => (
-                  <div key={item.name} className="flex items-center justify-between py-2">
-                    <div>
-                      <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.price} THB</p>
+            <AnimatePresence mode="wait">
+              {showQr && qrCodeUrl ? (
+                <motion.div
+                  key="qr-code"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center text-center py-4"
+                >
+                  <p className="mb-4 text-muted-foreground">
+                    Scan to pay {totalAmount.toFixed(2)} THB
+                  </p>
+                  <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="order-items"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {orderItems.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No items in order.</p>
+                  ) : (
+                    <div className="max-h-60 lg:max-h-none overflow-y-auto pr-2 flex-grow">
+                      {orderItems.map((item) => (
+                        <div key={item.name} className="flex items-center justify-between py-2">
+                          <div>
+                            <p className="font-semibold">{item.name}</p>
+                            <p className="text-sm text-muted-foreground">{item.price} THB</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
+                                <MinusCircle className="h-4 w-4"/>
+                            </Button>
+                            <span className="font-bold w-4 text-center">{item.quantity}</span>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
+                                <PlusCircle className="h-4 w-4"/>
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-2">
-                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
-                          <MinusCircle className="h-4 w-4"/>
-                      </Button>
-                      <span className="font-bold w-4 text-center">{item.quantity}</span>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
-                          <PlusCircle className="h-4 w-4"/>
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </CardContent>
           <CardFooter className="flex-col !p-4 !pt-0 mt-auto bg-card">
             <div className="w-full">
@@ -198,40 +227,16 @@ export default function OrderPanel() {
             <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
               {isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting...
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {showQr ? 'Confirming...' : 'Submitting...'}
                 </>
               ) : (
-                'Confirm Payment'
+                showQr ? 'I have paid' : 'Confirm Payment'
               )}
             </Button>
           </CardFooter>
         </Card>
       </div>
     </div>
-    <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
-        <DialogContent className="max-w-md">
-            <DialogHeader>
-            <DialogTitle className="font-headline text-2xl">Scan to Pay</DialogTitle>
-            <DialogDescription>
-                Use your banking app to scan the QR code and pay {totalAmount.toFixed(2)} THB.
-            </DialogDescription>
-            </DialogHeader>
-            {qrCodeUrl && (
-                <div className="flex justify-center p-4">
-                    <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
-                </div>
-            )}
-             <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Confirming...
-                </>
-              ) : (
-                'I have paid'
-              )}
-            </Button>
-        </DialogContent>
-    </Dialog>
     </>
   );
 }
