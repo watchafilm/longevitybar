@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
+  // Assume a user is not authenticated if there's no cookie
   const isAuthenticated = request.cookies.get('isAuthenticated')?.value === 'true'
   const { pathname } = request.nextUrl
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,18 +22,6 @@ const setCookie = (name: string, value: string, days: number) => {
   document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-// Function to get a cookie
-const getCookie = (name: string): string | null => {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
-  for(let i=0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0)==' ') c = c.substring(1,c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-  }
-  return null;
-}
-
 export function LoginForm() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -53,6 +41,7 @@ export function LoginForm() {
   
   const handleProceedToApp = () => {
     router.push('/');
+    router.refresh();
   }
 
   return (
