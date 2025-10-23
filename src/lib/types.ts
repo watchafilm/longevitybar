@@ -23,6 +23,7 @@ export type OrderStatus = 'pending' | 'served';
 
 export type Order = {
     id: string;
+    customerName: string;
     items: OrderItem[];
     totalAmount: number;
     paymentMethod: PaymentMethod;
@@ -37,3 +38,4 @@ export type Summary = {
     totalOrders: number;
     mostPopularDrink: string;
 };
+

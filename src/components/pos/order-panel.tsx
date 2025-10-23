@@ -15,6 +15,8 @@ import { useFirebase } from '@/firebase/provider';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, serverTimestamp } from 'firebase/firestore';
 import { DRINKS } from '@/lib/data';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 
 const QR_CODE_URLS = {
@@ -27,6 +29,7 @@ const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementTy
 
 export default function OrderPanel() {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('qr');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -74,6 +77,14 @@ export default function OrderPanel() {
       });
       return;
     }
+     if (!customerName.trim()) {
+      toast({
+        title: "Customer Name Required",
+        description: "Please enter the customer's name.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (!firestore) {
       toast({
         title: "Submission Failed",
@@ -87,6 +98,7 @@ export default function OrderPanel() {
       try {
         const ordersCollection = collection(firestore, 'orders');
         addDocumentNonBlocking(ordersCollection, {
+          customerName,
           items: orderItems,
           totalAmount,
           paymentMethod,
@@ -100,6 +112,7 @@ export default function OrderPanel() {
           action: <CheckCircle className="text-green-500" />,
         });
         setOrderItems([]);
+        setCustomerName('');
         setPaymentMethod('qr');
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to create order.';
@@ -195,6 +208,15 @@ export default function OrderPanel() {
           <CardFooter className="flex-col !p-4 !pt-0 mt-auto bg-card">
               <div className="w-full">
                   <Separator className="my-4"/>
+                  <div className="space-y-2 mb-4">
+                      <Label htmlFor="customerName">Customer Name</Label>
+                      <Input 
+                        id="customerName" 
+                        placeholder="Enter customer's name"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                      />
+                  </div>
                   <div className="flex justify-between items-center mb-4">
                   <span className="font-headline text-lg">Total</span>
                   <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>

@@ -85,6 +85,7 @@ export default function KitchenDisplay() {
     return (
       <TableRow key={uniqueItemId} className={cn(drinkInfo ? getBgColorClass(drinkInfo.id) : '')}>
         <TableCell>{new Date(item.createdAt).toLocaleTimeString()}</TableCell>
+        <TableCell className="font-medium">{item.customerName}</TableCell>
         <TableCell className="font-medium">{item.items[itemIndex].name}</TableCell>
         <TableCell>{item.items[itemIndex].quantity}</TableCell>
         <TableCell>
@@ -149,13 +150,14 @@ export default function KitchenDisplay() {
           <TableHeader>
             <TableRow>
               <TableHead>Time</TableHead>
+              <TableHead>Customer</TableHead>
               <TableHead>Drink</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>{sortedAndFlattenedOrders.length > 0 ? sortedAndFlattenedOrders : <TableRow><TableCell colSpan={5} className="text-center">No pending orders.</TableCell></TableRow>}</TableBody>
+          <TableBody>{sortedAndFlattenedOrders.length > 0 ? sortedAndFlattenedOrders : <TableRow><TableCell colSpan={6} className="text-center">No pending orders.</TableCell></TableRow>}</TableBody>
         </Table>
       </CardContent>
     </Card>

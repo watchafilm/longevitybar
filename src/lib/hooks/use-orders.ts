@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -8,6 +9,7 @@ import type { Order, OrderItem } from '@/lib/types';
 export interface ExpandedOrder extends Order {
   createdAt: number; 
   itemStatuses?: ('pending' | 'served')[];
+  customerName: string;
 }
 
 const convertOrder = (orderData: any): ExpandedOrder => {
