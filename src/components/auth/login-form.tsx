@@ -9,6 +9,34 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BsPersonFill, BsKeyFill } from 'react-icons/bs'
 
+// Function to set a cookie
+const setCookie = (name: string, value: string, days: number) => {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+// Function to get a cookie
+const getCookie = (name: string): string | null => {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for(let i=0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+}
+
+// Function to erase a cookie
+const eraseCookie = (name: string) => {   
+  document.cookie = name+'=; Max-Age=-99999999; path=/;';  
+}
+
 export function LoginForm() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -17,7 +45,7 @@ export function LoginForm() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated') === 'true'
+    const authStatus = getCookie('isAuthenticated') === 'true'
     setIsAuthenticated(authStatus)
   }, [])
 
@@ -25,7 +53,7 @@ export function LoginForm() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     if (username === 'genfosis' && password === 'sisfogen') {
-      localStorage.setItem('isAuthenticated', 'true')
+      setCookie('isAuthenticated', 'true', 7) // Set cookie for 7 days
       setIsAuthenticated(true)
       router.push('/')
       router.refresh() // To re-trigger middleware and update layout
@@ -35,9 +63,10 @@ export function LoginForm() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated')
+    eraseCookie('isAuthenticated')
     setIsAuthenticated(false)
     router.push('/login')
+    router.refresh() // To re-trigger middleware
   }
 
   if (isAuthenticated) {
