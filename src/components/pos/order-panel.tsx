@@ -199,7 +199,14 @@ export default function OrderPanel() {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 flex flex-col items-center justify-center text-center p-4"
                   >
-                    <Image src={qrCodeUrl} alt="QR Code for payment" width={256} height={256} className="rounded-lg" />
+                    <div className="relative w-full h-full">
+                      <Image 
+                        src={qrCodeUrl} 
+                        alt="QR Code for payment" 
+                        fill
+                        className="object-contain rounded-lg"
+                      />
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div
