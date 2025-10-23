@@ -55,7 +55,7 @@ export function LoginForm() {
     if (username === 'genfosis' && password === 'sisfogen') {
       setCookie('isAuthenticated', 'true', 7) // Set cookie for 7 days
       setIsAuthenticated(true)
-      router.refresh() // To re-trigger middleware and update layout
+      router.refresh() // To re-trigger middleware and redirect correctly
     } else {
       setError('Invalid username or password')
     }
