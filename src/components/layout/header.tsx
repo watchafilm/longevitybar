@@ -9,7 +9,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-center">
+      <div className="container flex h-14 items-center justify-end">
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <Image src="https://drive.google.com/uc?export=view&id=1XCn1KoGz8N98K-W073bsMgX80lfHy3H8" alt="Longevity Bar Logo" width={40} height={40} className="h-10 w-10" />
