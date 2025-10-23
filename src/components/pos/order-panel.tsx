@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useTransition, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Wallet, QrCode, CreditCard, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { QrCode, PlusCircle, MinusCircle, Trash2, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { Drink, OrderItem, PaymentMethod } from '@/lib/types';
@@ -19,22 +19,19 @@ import { DRINKS } from '@/lib/data';
 
 const QR_CODE_URLS = {
     qr: 'https://drive.google.com/uc?export=view&id=1kt1wQUj32SqfyPEgClwo5m3s6wikFLIH',
-    credit_card_qr: 'https://drive.usercontent.google.com/download?id=1MDtAIcAu8z1PHv9gaGVGEnHsbR6rAfuy',
 }
 
 const PAYMENT_METHODS: { id: PaymentMethod; label: string; icon: React.ElementType }[] = [
-  { id: 'cash', label: 'Cash', icon: Wallet },
   { id: 'qr', label: 'QR Scan', icon: QrCode },
-  { id: 'credit_card_qr', label: 'Credit Card QR', icon: CreditCard },
 ];
 
 export default function OrderPanel() {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('qr');
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const [showQr, setShowQr] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [showQr, setShowQr] = useState(true);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(QR_CODE_URLS.qr);
   const { firestore } = useFirebase();
 
   const totalAmount = useMemo(() => {
@@ -43,7 +40,7 @@ export default function OrderPanel() {
 
   const handleSetPaymentMethod = (method: PaymentMethod) => {
     setPaymentMethod(method);
-    if (method === 'qr' || method === 'credit_card_qr') {
+    if (method === 'qr') {
       setQrCodeUrl(QR_CODE_URLS[method]);
       setShowQr(true);
     } else {
@@ -51,6 +48,11 @@ export default function OrderPanel() {
       setQrCodeUrl(null);
     }
   };
+
+  useEffect(() => {
+    // Set default payment method and QR code on initial render
+    handleSetPaymentMethod('qr');
+  }, []);
 
   const handleAddItem = (drink: Drink) => {
     setOrderItems((prevItems) => {
@@ -117,8 +119,8 @@ export default function OrderPanel() {
           action: <CheckCircle className="text-green-500" />,
         });
         setOrderItems([]);
-        setShowQr(false);
-        setPaymentMethod('cash');
+        setShowQr(true);
+        setPaymentMethod('qr');
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to create order.';
         toast({
@@ -254,7 +256,7 @@ export default function OrderPanel() {
             <div className="w-full">
                 <Separator className="my-4"/>
                 <h4 className="font-headline text-lg mb-2">Payment Method</h4>
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="grid grid-cols-1 gap-2 mb-4">
                     {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
                     <Button
                         key={id}
@@ -289,3 +291,5 @@ export default function OrderPanel() {
     </>
   );
 }
+
+    
