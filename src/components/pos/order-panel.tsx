@@ -174,12 +174,13 @@ export default function OrderPanel() {
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <div className="space-y-2 mb-4">
-                <Label htmlFor="customerName">Customer Name</Label>
+                <Label htmlFor="customerName" className="text-lg">Customer Name</Label>
                 <Input 
                   id="customerName" 
                   placeholder="Enter customer's name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
+                  className="h-12 text-lg"
                 />
             </div>
             <Separator />
