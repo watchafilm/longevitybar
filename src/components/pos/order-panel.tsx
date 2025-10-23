@@ -151,11 +151,11 @@ export default function OrderPanel() {
                     />
                 </div>
                 <div className="flex flex-col p-4 flex-grow justify-center">
-                    <h3 className={`font-headline text-xl font-semibold ${drink.color}`}>{drink.name}</h3>
-                    <p className="text-muted-foreground font-medium mb-4">{drink.price} THB</p>
+                    <h3 className={`font-headline text-2xl font-semibold ${drink.color}`}>{drink.name}</h3>
+                    <p className="text-muted-foreground font-medium mb-4 text-lg">{drink.price} THB</p>
                     <div className="mt-auto">
-                        <Button onClick={() => handleAddItem(drink)} className="w-full">
-                            <PlusCircle className="mr-2 h-4 w-4" /> Add
+                        <Button onClick={() => handleAddItem(drink)} className="w-full text-lg">
+                            <PlusCircle className="mr-2 h-5 w-5" /> Add
                         </Button>
                     </div>
                 </div>
@@ -167,46 +167,46 @@ export default function OrderPanel() {
       <div className="lg:col-span-1 flex flex-col h-full">
         <Card className="flex flex-col flex-grow">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Current Order</CardTitle>
+            <CardTitle>Current Order</CardTitle>
             <CardDescription>
               Review items before confirming
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
             <div className="space-y-2 mb-4">
-                <Label htmlFor="customerName" className="text-lg">Customer Name</Label>
+                <Label htmlFor="customerName" className="text-xl">Customer Name</Label>
                 <Input 
                   id="customerName" 
                   placeholder="Enter customer's name"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="h-12 text-lg"
+                  className="h-14 text-2xl"
                 />
             </div>
             <Separator />
             <div className="flex-grow overflow-auto pr-2">
                 {orderItems.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-muted-foreground text-center py-8">No items in order.</p>
+                    <p className="text-muted-foreground text-center py-8 text-lg">No items in order.</p>
                   </div>
                 ) : (
                   <div className="h-full overflow-y-auto">
                     {orderItems.map((item) => (
-                      <div key={item.name} className="flex items-center justify-between py-2">
+                      <div key={item.name} className="flex items-center justify-between py-3">
                         <div>
-                          <p className="font-semibold">{item.name}</p>
-                          <p className="text-sm text-muted-foreground">{item.price} THB</p>
+                          <p className="font-semibold text-xl">{item.name}</p>
+                          <p className="text-md text-muted-foreground">{item.price} THB</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveItem(item.name)}>
-                              <MinusCircle className="h-4 w-4"/>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveItem(item.name)}>
+                              <MinusCircle className="h-5 w-5"/>
                           </Button>
-                          <span className="font-bold w-4 text-center">{item.quantity}</span>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
-                              <PlusCircle className="h-4 w-4"/>
+                          <span className="font-bold w-5 text-center text-xl">{item.quantity}</span>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleAddItem(DRINKS.find(d => d.name === item.name)!)}>
+                              <PlusCircle className="h-5 w-5"/>
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
-                            <Trash2 className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive" onClick={() => handleClearItem(item.name)}>
+                            <Trash2 className="h-5 w-5" />
                           </Button>
                         </div>
                       </div>
@@ -219,14 +219,14 @@ export default function OrderPanel() {
               <div className="w-full">
                   <Separator className="my-4"/>
                   <div className="flex justify-between items-center mb-4">
-                  <span className="font-headline text-lg">Total</span>
-                  <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
+                  <span className="font-headline text-2xl">Total</span>
+                  <span className="font-headline text-4xl font-bold">{totalAmount.toFixed(2)} THB</span>
                   </div>
               </div>
-              <Button size="lg" className="w-full font-bold text-lg" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
+              <Button size="lg" className="w-full font-bold text-xl h-14" onClick={handleSubmitOrder} disabled={isPending || orderItems.length === 0}>
                 {isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Submitting...
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" /> Submitting...
                   </>
                 ) : (
                   'Confirm Order'
@@ -240,7 +240,7 @@ export default function OrderPanel() {
       <div className="lg:col-span-1 flex flex-col h-full">
         <Card className="flex flex-col flex-grow">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Scan to Pay</CardTitle>
+            <CardTitle>Scan to Pay</CardTitle>
             <CardDescription>
                 Scan the QR code to complete the payment.
             </CardDescription>
