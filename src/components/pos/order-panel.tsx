@@ -173,6 +173,15 @@ export default function OrderPanel() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col">
+            <div className="space-y-2 mb-4">
+                <Label htmlFor="customerName">Customer Name</Label>
+                <Input 
+                  id="customerName" 
+                  placeholder="Enter customer's name"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+            </div>
             <Separator />
             <div className="flex-grow overflow-auto pr-2">
                 {orderItems.length === 0 ? (
@@ -208,15 +217,6 @@ export default function OrderPanel() {
           <CardFooter className="flex-col !p-4 !pt-0 mt-auto bg-card">
               <div className="w-full">
                   <Separator className="my-4"/>
-                  <div className="space-y-2 mb-4">
-                      <Label htmlFor="customerName">Customer Name</Label>
-                      <Input 
-                        id="customerName" 
-                        placeholder="Enter customer's name"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                      />
-                  </div>
                   <div className="flex justify-between items-center mb-4">
                   <span className="font-headline text-lg">Total</span>
                   <span className="font-headline text-3xl font-bold">{totalAmount.toFixed(2)} THB</span>
