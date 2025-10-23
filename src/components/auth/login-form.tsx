@@ -47,7 +47,10 @@ export function LoginForm() {
   useEffect(() => {
     const authStatus = getCookie('isAuthenticated') === 'true'
     setIsAuthenticated(authStatus)
-  }, [])
+    if(authStatus) {
+      router.refresh();
+    }
+  }, [router])
 
 
   const handleLogin = (e: React.FormEvent) => {
@@ -55,8 +58,8 @@ export function LoginForm() {
     if (username === 'genfosis' && password === 'sisfogen') {
       setCookie('isAuthenticated', 'true', 7) // Set cookie for 7 days
       setIsAuthenticated(true)
-      router.push('/')
       router.refresh() // To re-trigger middleware and update layout
+      router.push('/')
     } else {
       setError('Invalid username or password')
     }
@@ -65,7 +68,6 @@ export function LoginForm() {
   const handleLogout = () => {
     eraseCookie('isAuthenticated')
     setIsAuthenticated(false)
-    router.push('/login')
     router.refresh() // To re-trigger middleware
   }
 
