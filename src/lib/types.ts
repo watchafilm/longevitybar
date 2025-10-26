@@ -33,9 +33,17 @@ export type Order = {
 
 export type OrderPayload = Omit<Order, 'id' | 'createdAt' | 'status'>;
 
+export type DrinkSummary = {
+    name: string;
+    quantity: number;
+    revenue: number;
+};
+
 export type Summary = {
     totalRevenue: number;
     totalOrders: number;
     mostPopularDrink: string;
+    drinkSummaries: DrinkSummary[];
 };
+
 
